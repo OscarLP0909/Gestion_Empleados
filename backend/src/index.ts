@@ -6,6 +6,7 @@ import { setupPassport } from './config/passport.js';
 import authRouter from './routes/authRouter.js';
 import cors from "cors";
 import employeeRouter from './routes/employeeRouter.js';
+import contractRouter from './routes/contractRouter.js';
 
 const app = express();
 
@@ -41,7 +42,8 @@ app.use(generalLimiter);
 
 /// Rutas
 app.use("/auth", authLimiter, authRouter);
-app.use("/employee", authLimiter, employeeRouter)
+app.use("/employee", authLimiter, employeeRouter);
+app.use("/contract", authLimiter, contractRouter);
 
 
 

@@ -8,10 +8,15 @@ export const contractSchema = new Schema(
             ref: "Employee",
             required: true
         },
+        status: {
+            type: String,
+            enum: ["PENDIENTE", "ACTIVO", "FINALIZADO"],
+            default: "PENDIENTE"
+        },
         contractType: {
             type: String,
             required: true,
-            enum: [ "Indefinido", "Prácticas", "Formación", "Eventual" ], 
+            enum: [ "Indefinido", "Prácticas", "Formación", "Eventual" ],
         },
         temporaryType: {
             type: String,
