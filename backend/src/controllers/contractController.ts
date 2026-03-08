@@ -46,7 +46,7 @@ export const createContract = async(req: Request, res: Response, next: NextFunct
     }
 };
 
-export const getContracts = async(req: Request, res: Response, next: NextFunction) => {
+export const getContracts = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const contracts = await Contract.find();
         res.status(200).json(contracts);
@@ -54,3 +54,25 @@ export const getContracts = async(req: Request, res: Response, next: NextFunctio
         next(error);
     }
 };
+
+export const getContractById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req. params;
+        if (typeof(id) !== "string" || id.trim() === "") {
+            res.status(400).json({ message: "ID has to be a string"});
+            return;
+        }
+        if(!Types.ObjectId.isValid(id)) {
+            res.status(400).json({ message: "Invalid ID format"});
+            return;
+        }
+        const contract = await Contract.findById(id);
+        if (!contract) {
+            res.status(404).json({message: "Contract not found"});
+            return;
+        }
+        return res.status(200).json(contract);
+    } catch (error) {
+        next(error);
+    }
+}
