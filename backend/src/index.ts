@@ -16,36 +16,39 @@ app.use(express.json());
 app.use(passport.initialize());
 setupPassport();
 
-app.use(cors());
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 
 
-const authLimiter = rateLimit({
-    windowMs: 15*60*1000,
-    max: 10,
-    message: { message: "Demasiados intentos, espera 15 minutos" },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+// const authLimiter = rateLimit({
+//     windowMs: 15*60*1000,
+//     max: 10,
+//     message: { message: "Demasiados intentos, espera 15 minutos" },
+//     standardHeaders: true,
+//     legacyHeaders: false,
+// });
 
-const generalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 10,
-    message: { message: "Demasiados intentos, espera un momento" },
-    standardHeaders: true,
-    legacyHeaders: false,
-});
+// const generalLimiter = rateLimit({
+//     windowMs: 15 * 60 * 1000,
+//     max: 10,
+//     message: { message: "Demasiados intentos, espera un momento" },
+//     standardHeaders: true,
+//     legacyHeaders: false,
+// });
 
 
 
 app.use(helmet());
-app.use(generalLimiter);
+// app.use(generalLimiter);
 
 
 /// Rutas
-app.use("/auth", authLimiter, authRouter);
-app.use("/employee", authLimiter, employeeRouter);
-app.use("/contract", authLimiter, contractRouter);
-app.use("/user", authLimiter, userRouter);
+app.use("/auth", authRouter);
+app.use("/employee", employeeRouter);
+app.use("/contract", contractRouter);
+app.use("/user", userRouter);
 
 
 
