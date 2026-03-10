@@ -54,16 +54,6 @@ export const getEmployeeById = async(req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
 
-        if (typeof id !== "string" || id.trim() === "") {
-            res.status(400).json({message: "ID has to be a non-empty string"});
-            return;
-        }
-
-        if (!Types.ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid employee id format" });
-            return;
-        }
-
         const employee = await Employee.findById(id);
         
         if(!employee) {
@@ -100,16 +90,6 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
         const { name, surname, nif, address, email, phone } = req.body;
-
-        if (typeof id !== "string" || id.trim() === "") {
-            res.status(400).json({ message: "ID has to be a non-empty string" });
-            return;
-        }
-
-        if (!Types.ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid employee id format" });
-            return;
-        }
 
         const employee = await Employee.findById(id);
         if (!employee) {
@@ -151,16 +131,6 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
 export const deleteEmployee = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-
-        if (typeof id !== "string" || id.trim() === "") {
-            res.status(400).json({ message: "ID has to be a non-empty string" });
-            return;
-        }
-
-        if (!Types.ObjectId.isValid(id)) {
-            res.status(400).json({ message: "Invalid employee id format" });
-            return;
-        }
 
         const employee = await Employee.findByIdAndDelete(id);
 
