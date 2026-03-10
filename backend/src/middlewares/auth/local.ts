@@ -1,41 +1,56 @@
-import { Strategy, type IStrategyOptionsWithRequest } from "passport-local";
-import { User } from "../../db/models/user.js";
+import { Strategy as LocalStrategy } from "passport-local";
+import type { VerifyFunction } from "passport-local";
 import bcrypt from "bcrypt";
+import { User } from "../../db/models/user.js";
 
-// Options object, we tell Passport what fields are the ones to use as
-// username and password fields, in this case, email and password
-const strategyOptions: IStrategyOptionsWithRequest = {
-    passReqToCallback: true,
-    usernameField: "email",
-    passwordField: "password",
-    session: false,
-};
 
 const strategyName = "local";
 
+const verifyCallback: VerifyFunction = async (email, password, done) => {
+    try {
+        // Buscar usuario por email
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return done(null, false, {
+                message: "Email or password incorrect",
+            });
+        }
+
+        // ✅ ACTUALIZADO: Verificar también que el usuario esté activo
+        if (!user.isActive) {
+            return done(null, false, {
+                message: "User account is deactivated",
+            });
+        }
+
+        // Comparar contraseñas
+        const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+        if (!isPasswordMatch) {
+            return done(null, false, {
+                message: "Email or password incorrect",
+            });
+        }
+
+        // ✅ Usuario autenticado correctamente
+        const userObject = user.toObject();
+        return done(null, {
+            ...userObject,
+            _id: userObject._id.toString(),
+        });
+    } catch (error) {
+        return done(error);
+    }
+};
+
 export const localStrategy = {
     name: strategyName,
-    strategy: new Strategy(
-        strategyOptions,
-        async (req, email, password, done) => {
-            let user;
-            try {
-                user = await User.findOne({ email }).select("+password");
-                if (!user) {
-                    return done(null, false, { message: "Wrong credentials" });
-                }
-
-                const ok = await bcrypt.compare(password, user.password);
-                if (!ok) {
-                    return done(null, false, { message: "Wrong credentials" });
-                }
-                const safeUser = user.toObject();
-                delete (safeUser as any).password;
-
-                return done(null, safeUser);
-            } catch (error) {
-                return done(error);
-            }
-        }
-    )
-}
+    strategy: new LocalStrategy(
+        {
+            usernameField: "email", // Campo del request que contiene el email
+            passwordField: "password", // Campo del request que contiene la password
+        },
+        verifyCallback
+    ),
+};

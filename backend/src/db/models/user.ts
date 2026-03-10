@@ -5,6 +5,8 @@ export const userSchema = new Schema(
     {
         email: { type: String, required: true },
         password: { type: String, required: true, select: false },
+        role: { type: String, enum: ["ADMIN", "HR_MANAGER", "MANAGER", "EMPLOYEE"], default: "EMPLOYEE", required: true },
+        isActive: { type: Boolean, default: true },
     },
     {
         virtuals: {

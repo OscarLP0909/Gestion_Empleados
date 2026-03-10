@@ -11,15 +11,32 @@ const jwtSecret = process.env.JWT_SECRET as string;
 
 type JSONObject = { [key: string]: any };
 
+
 interface UserPayload {
     _id: string;
     email: string;
-    role: 'admin' | 'writer';
+    role: "ADMIN" | "HR_MANAGER" | "MANAGER" | "EMPLOYEE";
 }
 
+
 export const withToken = (data: JSONObject): JSONObject => {
-    const plainData = data instanceof Object && data.toObject ? data.toObject() : data;
-    return { ...plainData, token: jwt.sign({ _id: plainData.id, email: plainData.email }, jwtSecret, { expiresIn: "1d" }) };
+    const plainData =
+        data instanceof Object && data.toObject ? data.toObject() : data;
+    
+    const token = jwt.sign(
+        {
+            _id: plainData._id || plainData.id,
+            email: plainData.email,
+            role: plainData.role || "EMPLOYEE", 
+        },
+        jwtSecret,
+        { expiresIn: "7d" } 
+    );
+
+    return {
+        ...plainData,
+        token,
+    };
 };
 
 const strategyName = "jwt";
@@ -29,17 +46,28 @@ export const jwtStrategy = {
 
     strategy: new Strategy(
         {
-            // Indicates extractor where to obtain the token from
+            // Indica dónde obtener el token de la request
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-            // Secret key to verify the signature of the token
+            // Secret para verificar la firma del token
             secretOrKey: jwtSecret,
         },
         async (jwt_payload: UserPayload, done: VerifiedCallback) => {
-            // This is a verification callback
-            // It gets called for every request to verify that the user is authenticated
+            // Este callback se ejecuta para cada request
+            // Verifica que el usuario esté autenticado
             try {
-                const user = await User.findById(jwt_payload._id);
-                return done(null, user || false);
+                const user = await User.findById(jwt_payload._id).select("-password");
+                
+                if (!user) {
+                    return done(null, false);
+                }
+
+                // Asegurarse de que el user tiene el role
+                // (en caso de que la BD no lo tenga)
+                if (!user.role) {
+                    user.role = "EMPLOYEE";
+                }
+
+                return done(null, user);
             } catch (error) {
                 return done(error, false);
             }
