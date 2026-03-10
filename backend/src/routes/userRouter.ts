@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-// ✅ Todas estas rutas requieren ser ADMIN
+// Todas estas rutas requieren ser ADMIN
 router.use(ensureAuthenticated, isAdmin);
 
 // GET - Obtener todos los usuarios
