@@ -7,6 +7,7 @@ import authRouter from './routes/authRouter.js';
 import cors from "cors";
 import employeeRouter from './routes/employeeRouter.js';
 import contractRouter from './routes/contractRouter.js';
+import userRouter from './routes/userRouter.js';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use(generalLimiter);
 app.use("/auth", authLimiter, authRouter);
 app.use("/employee", authLimiter, employeeRouter);
 app.use("/contract", authLimiter, contractRouter);
+app.use("/user", authLimiter, userRouter);
 
 
 
