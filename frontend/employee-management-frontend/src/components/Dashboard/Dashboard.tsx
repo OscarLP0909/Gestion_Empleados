@@ -1,12 +1,13 @@
 import { useEmployees } from "../../hooks/useEmployees";
 import { useContracts } from "../../hooks/useContract";
-import { useAuthStore } from "../../store/authStore";
+import { useNavigate } from "react-router-dom";
 import { Layout } from "../Layout/Layout";
 
 export const Dashboard = () => {
     const { employeeCount, loading: employeesLoading } = useEmployees();
-    const { contractCount, activeContractCount, loading: contractsLoading } = useContracts();
-    const { user } = useAuthStore();
+    const { contractCount, activeContractCount, loading: contractsLoading } =
+        useContracts();
+    const navigate = useNavigate();
 
     const StatCard = ({
         title,
@@ -19,12 +20,15 @@ export const Dashboard = () => {
         icon: string;
         color: string;
     }) => (
-        <div className="card border-0 shadow-sm">
+        <div className="card border-0 shadow-sm h-100">
             <div className="card-body">
                 <div className="d-flex align-items-center">
                     <div
                         className="p-3 rounded-circle"
-                        style={{ backgroundColor: color + "20", fontSize: "32px" }}
+                        style={{
+                            backgroundColor: color + "20",
+                            fontSize: "32px",
+                        }}
                     >
                         {icon}
                     </div>
@@ -42,11 +46,9 @@ export const Dashboard = () => {
             <div>
                 {/* Header */}
                 <div className="mb-5">
-                    <h1 className="fw-bold mb-2">
-                        ¡Bienvenido, {user?.name || "No especificado"}!
-                    </h1>
+                    <h1 className="fw-bold mb-2">Dashboard</h1>
                     <p className="text-muted">
-                        Aquí puedes gestionar empleados y contratos de tu empresa.
+                        Resumen de tu sistema de gestión de empleados y contratos.
                     </p>
                 </div>
 
@@ -73,7 +75,9 @@ export const Dashboard = () => {
                     <div className="col-md-6 col-lg-3 mb-4">
                         <StatCard
                             title="Contratos Activos"
-                            value={contractsLoading ? "..." : activeContractCount}
+                            value={
+                                contractsLoading ? "..." : activeContractCount
+                            }
                             icon="✅"
                             color="#f093fb"
                         />
@@ -81,62 +85,60 @@ export const Dashboard = () => {
 
                     <div className="col-md-6 col-lg-3 mb-4">
                         <StatCard
-                            title="Tu Rol"
-                            value={user?.role || "N/A"}
-                            icon="🔐"
-                            color="#4facfe"
+                            title="Contratos Inactivos"
+                            value={
+                                contractsLoading
+                                    ? "..."
+                                    : contractCount - activeContractCount
+                            }
+                            icon="❌"
+                            color="#ff6b6b"
                         />
                     </div>
                 </div>
 
-                {/* Info Cards */}
+                {/* Quick Actions */}
                 <div className="row">
-                    <div className="col-lg-6 mb-4">
+                    <div className="col-12">
                         <div className="card border-0 shadow-sm">
                             <div className="card-body">
-                                <h5 className="card-title fw-bold mb-3">
+                                <h5 className="card-title fw-bold mb-4">
                                     📚 Acciones Rápidas
                                 </h5>
-                                <div className="d-grid gap-2">
-                                    <button className="btn btn-primary btn-sm">
-                                        ➕ Nuevo Empleado
-                                    </button>
-                                    <button className="btn btn-secondary btn-sm">
-                                        ➕ Nuevo Contrato
-                                    </button>
-                                    <button className="btn btn-info btn-sm">
-                                        📊 Ver Reportes
-                                    </button>
+                                <div className="row g-3">
+                                    <div className="col-md-6 col-lg-3">
+                                        <button
+                                            onClick={() => navigate("/employees")}
+                                            className="btn btn-primary w-100"
+                                        >
+                                            ➕ Nuevo Empleado
+                                        </button>
+                                    </div>
+                                    <div className="col-md-6 col-lg-3">
+                                        <button
+                                            onClick={() => navigate("/contracts")}
+                                            className="btn btn-secondary w-100"
+                                        >
+                                            ➕ Nuevo Contrato
+                                        </button>
+                                    </div>
+                                    <div className="col-md-6 col-lg-3">
+                                        <button
+                                            onClick={() => navigate("/employees")}
+                                            className="btn btn-info w-100"
+                                        >
+                                            👥 Ver Empleados
+                                        </button>
+                                    </div>
+                                    <div className="col-md-6 col-lg-3">
+                                        <button
+                                            onClick={() => navigate("/contracts")}
+                                            className="btn btn-warning w-100"
+                                        >
+                                            📋 Ver Contratos
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="col-lg-6 mb-4">
-                        <div className="card border-0 shadow-sm">
-                            <div className="card-body">
-                                <h5 className="card-title fw-bold mb-3">
-                                    ℹ️ Información
-                                </h5>
-                                <ul className="list-unstyled">
-                                    <li className="mb-2">
-                                        <strong>Email:</strong> {user?.email}
-                                    </li>
-                                    <li className="mb-2">
-                                        <strong>Rol:</strong>{" "}
-                                        <span className="badge bg-primary">{user?.role}</span>
-                                    </li>
-                                    <li>
-                                        <strong>Permisos:</strong>
-                                        <div className="small text-muted mt-1">
-                                            {["ADMIN", "HR_MANAGER"].includes(
-                                                user?.role || ""
-                                            )
-                                                ? "✅ Crear y editar"
-                                                : "❌ Solo lectura"}
-                                        </div>
-                                    </li>
-                                </ul>
                             </div>
                         </div>
                     </div>
