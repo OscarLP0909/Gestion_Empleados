@@ -18,9 +18,9 @@ export const Navbar = () => {
                 </span>
                 <div className="d-flex align-items-center gap-3">
                     <div className="text-white small">
-                        <div>Hola, <strong>{user?.name || user?.email}</strong></div>
-                        <div className="badge bg-primary">{user?.role}</div>
-                    </div>
+    <div>Hola, <strong>{user?.name || user?.email}</strong></div>
+    <div className="badge bg-primary">{user?.role}</div>
+</div>
                     <button
                         onClick={handleLogout}
                         className="btn btn-sm btn-danger"
