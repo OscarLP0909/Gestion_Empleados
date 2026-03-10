@@ -21,6 +21,6 @@ router.get("/", ensureAuthenticated, getEmployees);
 router.post("/", ensureAuthenticated, createEmployee);
 router.get("/:id", ensureAuthenticated, validateObjectId, getEmployeeById);
 router.put("/:id", ensureAuthenticated, validateObjectId, updateEmployee);
-router.delete("/:id", ensureAuthenticated, deleteEmployee);
+router.delete("/:id", ensureAuthenticated, validateObjectId, deleteEmployee);
 
 export default router;
