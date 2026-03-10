@@ -43,7 +43,7 @@ export const Dashboard = () => {
                 {/* Header */}
                 <div className="mb-5">
                     <h1 className="fw-bold mb-2">
-                        ¡Bienvenido, {user?.email}!
+                        ¡Bienvenido, {user?.name || "No especificado"}!
                     </h1>
                     <p className="text-muted">
                         Aquí puedes gestionar empleados y contratos de tu empresa.
