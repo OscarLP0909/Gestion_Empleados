@@ -1,7 +1,3 @@
-// =====================================================
-// controllers/userController.ts - NUEVO
-// =====================================================
-
 import type { NextFunction, Request, Response } from "express";
 import { User } from "../db/models/user.js";
 import { Types } from "mongoose";

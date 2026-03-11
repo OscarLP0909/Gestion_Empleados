@@ -106,6 +106,16 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                 </>
             )}
 
+            {/* SECCIÓN: Administración (Solo ADMIN) */}
+            {isAdmin && (
+                <>
+                    <SectionTitle label="Administración" />
+                    <MenuItem icon="👥" label="Usuarios" path="/users" />
+                    <MenuItem icon="📋" label="Auditoría" path="/audit" />
+                    <MenuItem icon="⚙️" label="Configuración" path="/settings" />
+                </>
+            )}
+
             {/* SECCIÓN: Información */}
             <SectionTitle label="Más" />
             <MenuItem icon="❓" label="Ayuda" path="/help" />
