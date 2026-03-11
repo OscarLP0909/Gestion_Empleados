@@ -13,6 +13,7 @@ import {
     getContractById,
     getContracts,
     getContractsOfEmployee,
+    getContractsPending,
     updateContract,
     updateStatus,
 } from "../controllers/contractController.js";
@@ -43,6 +44,9 @@ router.get(
     getContractById
 );
 
+// Obtener contratos PENDIENTES
+router.get("/pending", ensureAuthenticated, authorizeRole("ADMIN"), authorizeRole("HR_MANAGER"), getContractsPending);
+
 // ✅ Crear contrato (solo HR_MANAGER o ADMIN)
 router.post(
     "/",
@@ -62,7 +66,7 @@ router.put(
 
 // ✅ Cambiar status (solo HR_MANAGER o ADMIN)
 router.patch(
-    "/status/:id",
+    "/:id",
     ensureAuthenticated,
     isHROrAdmin,
     validateObjectId("id"),

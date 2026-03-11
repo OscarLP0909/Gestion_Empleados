@@ -1,31 +1,44 @@
-import { useState, useEffect } from "react";
-import apiClient from "../services/api";
+import { useEffect, useState } from "react";
+import { contractService } from "../services/contractService";
+import type { Contract } from "../types/contract";
 
 export const useContracts = () => {
-    const [contractCount, setContractCount] = useState(0);
-    const [activeContractCount, setActiveContractCount] = useState(0);
+    const [contracts, setContracts] = useState<Contract[]>([]);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchContracts = async () => {
-            try {
-                setLoading(true);
-                const response = await apiClient.get("/contract");
-                setContractCount(response.data.length);
-                
-                const activeCount = response.data.filter(
-                    (c: any) => c.status === "ACTIVO"
-                ).length;
-                setActiveContractCount(activeCount);
-            } catch (error) {
-                console.error("Error fetching contracts:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchContracts();
     }, []);
 
-    return { contractCount, activeContractCount, loading };
+    const fetchContracts = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const data = await contractService.getAll();
+            setContracts(data);
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Error al cargar contratos");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const contractCount = contracts.length;
+    const approvedContractCount = contracts.filter(c => c.status === "APROBADO").length;
+    const pendingContractCount = contracts.filter(c => c.status === "PENDIENTE").length;
+    const rejectedContractCount = contracts.filter(c => c.status === "RECHAZADO").length;
+    const finalizedContractCount = contracts.filter(c => c.status === "FINALIZADO").length;
+
+    return {
+        contracts,
+        contractCount,
+        approvedContractCount,
+        pendingContractCount,
+        rejectedContractCount,
+        finalizedContractCount,
+        loading,
+        error,
+        fetchContracts,
+    };
 };

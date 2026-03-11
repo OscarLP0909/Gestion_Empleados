@@ -195,7 +195,7 @@ export const CreateEmployeeForm = () => {
                                         </div>
                                         <div className="col-md-6">
                                             <InputField
-                                                label="Apellido"
+                                                label="Apellido/s"
                                                 name="surname"
                                                 placeholder="García López"
                                                 required={true}
