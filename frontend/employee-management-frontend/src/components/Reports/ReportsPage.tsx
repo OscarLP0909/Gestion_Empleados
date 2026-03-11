@@ -19,6 +19,7 @@ import { employeeService } from "../../services/employeeService";
 import { Layout } from "../Layout/Layout";
 import type { Contract } from "../../types/contract";
 import type { Employee } from "../../types/employee";
+import { exportService } from "../../services/exportService";
 
 export const ReportsPage = () => {
     const [contracts, setContracts] = useState<Contract[]>([]);
@@ -122,10 +123,10 @@ export const ReportsPage = () => {
         totalSalary: contracts.reduce((sum, c) => sum + c.salaryAmount, 0),
         approvalRate: contracts.length > 0
             ? Math.round(
-                  ((contracts.filter((c) => c.status !== "PENDIENTE").length /
-                      contracts.length) *
-                      100)
-              )
+                ((contracts.filter((c) => c.status !== "PENDIENTE").length /
+                    contracts.length) *
+                    100)
+            )
             : 0,
     };
 
@@ -158,11 +159,20 @@ export const ReportsPage = () => {
         <Layout>
             <div className="container-fluid">
                 {/* Header */}
-                <div className="mb-4">
-                    <h1 className="fw-bold mb-2">Reportes</h1>
-                    <p className="text-muted">
-                        Estadísticas y análisis de empleados y contratos
-                    </p>
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 className="fw-bold mb-2">Reportes</h1>
+                        <p className="text-muted">Estadísticas y análisis de empleados y contratos</p>
+                    </div>
+                    <button
+                        onClick={() => {
+                            exportService.exportReportToPDF(stats, statusData, departmentData, typeData);
+                        }}
+                        className="btn btn-success"
+                        title="Descargar PDF"
+                    >
+                        📥 Exportar PDF
+                    </button>
                 </div>
 
                 {/* Tarjetas de estadísticas */}

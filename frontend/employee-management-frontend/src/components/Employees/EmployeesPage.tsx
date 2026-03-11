@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { employeeService } from "../../services/employeeService";
 import { Layout } from "../Layout/Layout";
 import type { Employee } from "../../types/employee";
+import { exportService } from "../../services/exportService";
 
 export const EmployeesPage = () => {
     const navigate = useNavigate();
@@ -57,16 +58,23 @@ export const EmployeesPage = () => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h1 className="fw-bold mb-2">Empleados</h1>
-                        <p className="text-muted">
-                            Gestiona todos los empleados de tu empresa
-                        </p>
+                        <p className="text-muted">Gestiona todos los empleados de tu empresa</p>
                     </div>
-                    <button
-                        onClick={() => navigate("/employees/new")}
-                        className="btn btn-primary"
-                    >
-                        ➕ Nuevo Empleado
-                    </button>
+                    <div className="d-flex gap-2">
+                        <button
+                            onClick={() => exportService.exportEmployeesToPDF(filteredEmployees)}
+                            className="btn btn-success"
+                            title="Descargar PDF"
+                        >
+                            📥 Exportar PDF
+                        </button>
+                        <button
+                            onClick={() => navigate("/employees/new")}
+                            className="btn btn-primary"
+                        >
+                            ➕ Nuevo Empleado
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mensajes */}
