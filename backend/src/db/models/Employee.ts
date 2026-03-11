@@ -6,11 +6,9 @@ export const employeeSchema = new Schema(
         name: { type: String, trim: true },
         surname: { type: String, trim: true },
         nif: { type: String, trim: true },
-        address: {
-            country: { type: String, trim: true },
-            province: { type: String, trim: true },
-            city: { type: String, trim: true }
-        },
+        city: String,
+        province: String,
+        country: String,
         email: { type: String, trim: true, unique: true, lowercase: true },
         phone: { type: String, trim: true },
     },

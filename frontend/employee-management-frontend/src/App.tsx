@@ -1,7 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
-import { LoginForm } from "./components/auth/LoginForm";
+import { LoginForm } from "./components/Auth/LoginForm";
 import { Dashboard } from "./components/Dashboard/Dashboard";
+import { EmployeesPage } from "./components/Employees/EmployeesPage";
+import { CreateEmployeeForm } from "./components/Employees/CreateEmployeeForm";
+import { EmployeeDetail } from "./components/Employees/EmployeeDetail";
+import { EditEmployeeForm } from "./components/Employees/EditEmployeeForm";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
@@ -27,9 +31,33 @@ export default function App() {
                     path="/employees"
                     element={
                         <ProtectedRoute>
-                            <div className="p-4">
-                                <h2>Empleados (Próximamente)</h2>
-                            </div>
+                            <EmployeesPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/employees/new"
+                    element={
+                        <ProtectedRoute>
+                            <CreateEmployeeForm />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/employees/:id"
+                    element={
+                        <ProtectedRoute>
+                            <EmployeeDetail />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/employees/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <EditEmployeeForm />
                         </ProtectedRoute>
                     }
                 />

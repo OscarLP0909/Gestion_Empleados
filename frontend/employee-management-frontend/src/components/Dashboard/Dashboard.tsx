@@ -85,13 +85,13 @@ export const Dashboard = () => {
 
                     <div className="col-md-6 col-lg-3 mb-4">
                         <StatCard
-                            title="Contratos Inactivos"
+                            title="Contratos Finalizados"
                             value={
                                 contractsLoading
                                     ? "..."
                                     : contractCount - activeContractCount
                             }
-                            icon="❌"
+                            icon="🏁"
                             color="#ff6b6b"
                         />
                     </div>
