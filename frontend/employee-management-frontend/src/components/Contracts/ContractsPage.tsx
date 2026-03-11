@@ -5,6 +5,7 @@ import { employeeService } from "../../services/employeeService";
 import { Layout } from "../Layout/Layout";
 import type { Contract } from "../../types/contract";
 import type { Employee } from "../../types/employee";
+import { exportService } from "../../services/exportService";
 
 export const ContractsPage = () => {
     const navigate = useNavigate();
@@ -108,16 +109,23 @@ export const ContractsPage = () => {
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h1 className="fw-bold mb-2">Contratos</h1>
-                        <p className="text-muted">
-                            Gestiona todos los contratos de tu empresa
-                        </p>
+                        <p className="text-muted">Gestiona todos los contratos de tu empresa</p>
                     </div>
-                    <button
-                        onClick={() => navigate("/contracts/new")}
-                        className="btn btn-primary"
-                    >
-                        ➕ Nuevo Contrato
-                    </button>
+                    <div className="d-flex gap-2">
+                        <button
+                            onClick={() => exportService.exportContractsToPDF(filteredContracts, employees)}
+                            className="btn btn-success"
+                            title="Descargar PDF"
+                        >
+                            📥 Exportar PDF
+                        </button>
+                        <button
+                            onClick={() => navigate("/contracts/new")}
+                            className="btn btn-primary"
+                        >
+                            ➕ Nuevo Contrato
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mensajes */}

@@ -64,3 +64,83 @@ export const register = async (
         next(error);
     }
 };
+
+/**
+ * GET /auth/profile
+ * Obtener perfil del usuario logueado
+ */
+export const getProfile = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const user = await User.findById(req.user?._id).select("-password");
+        if (!user) {
+            res.status(404).json({ message: "Usuario no encontrado" });
+            return;
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * PATCH /auth/profile
+ * Actualizar información del perfil
+ */
+export const updateProfile = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, email } = req.body;
+
+        if (!name && !email) {
+            res.status(400).json({ message: "Debe enviar al menos un campo a actualizar" });
+            return;
+        }
+
+        const user = await User.findByIdAndUpdate(
+            req.user?._id,
+            { ...(name && { name }), ...(email && { email }) },
+            { new: true }
+        ).select("-password");
+
+        res.status(200).json(user);
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * PATCH /auth/change-password
+ * Cambiar contraseña del usuario
+ */
+export const changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            res.status(400).json({ message: "Se requieren ambas contraseñas" });
+            return;
+        }
+
+        // ← IMPORTANTE: Seleccionar el password
+        const user = await User.findById(req.user?._id).select("+password");
+        if (!user) {
+            res.status(404).json({ message: "Usuario no encontrado" });
+            return;
+        }
+
+        // Verificar contraseña actual
+        const isPasswordValid = await (user as any).comparePassword(currentPassword);
+        if (!isPasswordValid) {
+            res.status(401).json({ message: "Contraseña actual incorrecta" });
+            return;
+        }
+
+        // Cambiar contraseña
+        user.password = newPassword;
+        await user.save();
+
+        res.status(200).json({ message: "Contraseña actualizada correctamente" });
+    } catch (error) {
+        console.error("Error en changePassword:", error);
+        next(error);
+    }
+};

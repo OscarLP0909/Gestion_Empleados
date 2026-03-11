@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { ObjectId } from "mongodb";
+import bcrypt from "bcrypt";
 
 export const userSchema = new Schema(
     {
@@ -12,11 +13,11 @@ export const userSchema = new Schema(
     {
         virtuals: {
             id: {
-            get() {
-                return this._id.toString();
+                get() {
+                    return this._id.toString();
                 },
-            set(value: string) {
-                this._id = new ObjectId(value);
+                set(value: string) {
+                    this._id = new ObjectId(value);
                 },
             },
         },
@@ -37,5 +38,20 @@ export const userSchema = new Schema(
         }
     }
 );
+
+userSchema.pre("save", async function() {
+    if (!this.isModified("password")) return;
+    
+    try {
+        const salt = await bcrypt.genSalt(10);
+        this.password = await bcrypt.hash(this.password, salt);
+    } catch (error) {
+        throw error;
+    }
+});
+
+userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
 export const User = model("User", userSchema, "users");

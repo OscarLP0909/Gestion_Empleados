@@ -26,6 +26,7 @@ export const useContracts = () => {
 
     const contractCount = contracts.length;
     const approvedContractCount = contracts.filter(c => c.status === "APROBADO").length;
+    const activeContractCount = contracts.filter(c => c.status === "ACTIVO").length;
     const pendingContractCount = contracts.filter(c => c.status === "PENDIENTE").length;
     const rejectedContractCount = contracts.filter(c => c.status === "RECHAZADO").length;
     const finalizedContractCount = contracts.filter(c => c.status === "FINALIZADO").length;
@@ -34,6 +35,7 @@ export const useContracts = () => {
         contracts,
         contractCount,
         approvedContractCount,
+        activeContractCount,
         pendingContractCount,
         rejectedContractCount,
         finalizedContractCount,

@@ -12,6 +12,8 @@ import { CreateContractForm } from "./components/Contracts/CreateContractForm";
 import { EditContractForm } from "./components/Contracts/EditContractForm";
 import { ContractApprovalsPage } from "./components/Contracts/ContractApprovalsPage";
 import { ReportsPage } from "./components/Reports/ReportsPage";
+import { UsersPage } from "./components/Users/UsersPage";
+import { ProfilePage } from "./components/Profile/ProfilePage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
@@ -115,6 +117,22 @@ export default function App() {
                     element={
                         <ProtectedRoute>
                             <ReportsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/users"
+                    element={
+                        <ProtectedRoute>
+                            <UsersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
                         </ProtectedRoute>
                     }
                 />

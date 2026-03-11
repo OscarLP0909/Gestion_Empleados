@@ -5,8 +5,13 @@ import { Layout } from "../Layout/Layout";
 
 export const Dashboard = () => {
     const { employeeCount, loading: employeesLoading } = useEmployees();
-    const { contractCount, approvedContractCount, loading: contractsLoading } =
-        useContracts();
+    const {
+        contractCount,
+        approvedContractCount,
+        activeContractCount,
+        finalizedContractCount,
+        loading: contractsLoading
+    } = useContracts();
     const navigate = useNavigate();
 
     const StatCard = ({
@@ -76,7 +81,7 @@ export const Dashboard = () => {
                         <StatCard
                             title="Contratos Activos"
                             value={
-                                contractsLoading ? "..." : approvedContractCount
+                                contractsLoading ? "..." : activeContractCount
                             }
                             icon="✅"
                             color="#f093fb"
@@ -89,7 +94,7 @@ export const Dashboard = () => {
                             value={
                                 contractsLoading
                                     ? "..."
-                                    : contractCount - approvedContractCount
+                                    : finalizedContractCount 
                             }
                             icon="🏁"
                             color="#ff6b6b"
