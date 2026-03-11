@@ -3,19 +3,21 @@ import { Types } from "mongoose";
 import { Contract } from "../db/models/Contract.js";
 import { Employee } from "../db/models/Employee.js";
 
-export const createContract = async(req: Request, res: Response, next: NextFunction) => {
+export const createContract = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { employeeId, contractType, temporaryType, workdayType, salaryType, salaryAmount, startDate, endDate, department, category, position, status } = req.body;
 
         const employee = await Employee.findById(employeeId);
-        if(!employee) {
-            res.status(404).json({message: "Employee not found"});
+        if (!employee) {
+            res.status(404).json({ message: "Employee not found" });
             return;
         }
-        if (!contractType || !workdayType || !salaryType || salaryAmount === undefined || !startDate || !department || !category || !position) {
-        res.status(400).json({message: "Missing required fields"});
-        return;
+
+        if (!contractType || !workdayType || !salaryType || salaryAmount === undefined || !startDate || !department?.trim() || !category?.trim() || !position?.trim()) {
+            res.status(400).json({ message: "Missing required fields" });
+            return;
         }
+
         const contract = new Contract({
             employeeId,
             contractType,
@@ -28,8 +30,9 @@ export const createContract = async(req: Request, res: Response, next: NextFunct
             department: department.trim(),
             category: category.trim(),
             position: position.trim(),
-            status: status.trim()
+            status: status || "PENDIENTE"
         });
+
         await contract.save();
         res.status(201).json(contract);
 
@@ -49,10 +52,10 @@ export const getContracts = async (req: Request, res: Response, next: NextFuncti
 
 export const getContractById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { id } = req. params;
+        const { id } = req.params;
         const contract = await Contract.findById(id);
         if (!contract) {
-            res.status(404).json({message: "Contract not found"});
+            res.status(404).json({ message: "Contract not found" });
             return;
         }
         return res.status(200).json(contract);
@@ -65,11 +68,11 @@ export const deleteContract = async (req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
         const contract = await Contract.findByIdAndDelete(id);
-        if(!contract) {
-            res.status(404).json({ message: "Contract not found"});
+        if (!contract) {
+            res.status(404).json({ message: "Contract not found" });
             return;
         }
-        return res.status(200).json({message: "Contract deleted successfully"});
+        return res.status(200).json({ message: "Contract deleted successfully" });
     } catch (error) {
         next(error);
     }
@@ -155,7 +158,7 @@ export const updateContract = async (req: Request, res: Response, next: NextFunc
                 department: department?.trim() ?? contract.department,
                 category: category?.trim() ?? contract.category,
                 position: position?.trim() ?? contract.position,
-                status: status.trim() ?? contract.status
+                status: status ?? contract.status
             },
             { new: true }
         );
@@ -171,14 +174,31 @@ export const updateStatus = async (req: Request, res: Response, next: NextFuncti
         const { status } = req.body;
 
         const contract = await Contract.findById(id);
-        if(!contract) {
-            res.status(404).json({message: "Contract not found"});
+        if (!contract) {
+            res.status(404).json({ message: "Contract not found" });
             return;
         }
-        const updateStatus = await Contract.findByIdAndUpdate(id, {
-            status: status.trim() ?? contract.status,
-        });
-        res.status(200).json(updateStatus);
+
+        const updatedContract = await Contract.findByIdAndUpdate(
+            id,
+            { status: status ?? contract.status },
+            { new: true }  
+        );
+
+        res.status(200).json(updatedContract);
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getContractsPending = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const contracts = await Contract.find({ status: "PENDIENTE" }).populate("employeeId");
+        if (contracts.length === 0) {
+            res.status(404).json({ message: "There aren´t any PENDING contract" });
+            return;
+        }
+        res.status(200).json(contracts);
     } catch (error) {
         next(error);
     }

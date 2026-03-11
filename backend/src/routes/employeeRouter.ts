@@ -19,8 +19,8 @@ router.get("/nif/:nif", ensureAuthenticated, validateNif, getEmployeeByNif);
 
 router.get("/", ensureAuthenticated, getEmployees);
 router.post("/", ensureAuthenticated, createEmployee);
-router.get("/:id", ensureAuthenticated, validateObjectId, getEmployeeById);
-router.put("/:id", ensureAuthenticated, validateObjectId, updateEmployee);
-router.delete("/:id", ensureAuthenticated, validateObjectId, deleteEmployee);
+router.get("/:id", ensureAuthenticated, getEmployeeById);
+router.put("/:id", ensureAuthenticated, updateEmployee);
+router.delete("/:id", ensureAuthenticated, deleteEmployee);
 
 export default router;

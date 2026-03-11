@@ -4,7 +4,7 @@ import { Types } from "mongoose";
 
 export const createEmployee = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { name, surname, nif, address, email, phone, hireDate } = req.body;
+        const { name, surname, nif, email, phone, city, province, country } = req.body;
 
         if (typeof name !== "string" ||
             typeof surname !== "string" ||
@@ -28,10 +28,11 @@ export const createEmployee = async (req: Request, res: Response, next: NextFunc
             name: name.trim(),
             surname: surname.trim(),
             nif: nif.trim(),
-            address,
             email: email.trim().toLowerCase(),
             phone,
-            hireDate
+            city: city.trim(),
+            province: province.trim(),
+            country: country.trim()
         });
         await employee.save();
         return res.status(201).json(employee);
@@ -53,8 +54,8 @@ export const getEmployees = async (req: Request, res: Response, next: NextFuncti
 export const getEmployeeById = async(req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-
         const employee = await Employee.findById(id);
+        console.log("Empleado", employee);
         
         if(!employee) {
             res.status(404).json({message: "Employee not found"});
@@ -89,7 +90,7 @@ export const getEmployeeByNif = async(req: Request, res: Response, next: NextFun
 export const updateEmployee = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const { name, surname, nif, address, email, phone } = req.body;
+        const { name, surname, nif, email, phone, city, province, country } = req.body;
 
         const employee = await Employee.findById(id);
         if (!employee) {
@@ -115,9 +116,11 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
                 name: name?.trim() ?? employee.name,
                 surname: surname?.trim() ?? employee.surname,
                 nif: nif?.trim() ?? employee.nif,
-                address: address ?? employee.address,
                 email: email?.trim().toLowerCase() ?? employee.email,
-                phone: phone ?? employee.phone
+                phone: phone ?? employee.phone,
+                city: city ?? employee.city,
+                province: province ?? employee.province,
+                country: country ?? employee.country,
             },
             { new: true }
         );
