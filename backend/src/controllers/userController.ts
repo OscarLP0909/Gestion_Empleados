@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { User } from "../db/models/user.js";
+import { createAuditLog } from "../services/auditService.js";
 import { Types } from "mongoose";
 
 /**
@@ -44,21 +45,38 @@ export const updateUserRole = async (
             return;
         }
 
-        // ✅ Actualizar usuario
-        const user = await User.findByIdAndUpdate(
-            id,
-            { role },
-            { new: true }
-        ).select("-password");
-
+        // ✅ Obtener usuario antes del cambio
+        const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
         }
 
+        const oldRole = user.role;
+
+        // ✅ Actualizar usuario
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { role },
+            { new: true }
+        ).select("-password");
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "ROLE_CHANGE",
+            "USER",
+            updatedUser?._id.toString(),
+            updatedUser?.name as string | undefined,
+            req,
+            { before: { role: oldRole }, after: { role: updatedUser?.role } },
+            `Rol del usuario ${updatedUser?.name} cambió de ${oldRole} a ${updatedUser?.role}`
+        );
+
         res.status(200).json({
             message: "User role updated successfully",
-            user,
+            user: updatedUser,
         });
     } catch (error) {
         next(error);
@@ -86,21 +104,36 @@ export const deactivateUser = async (
             return;
         }
 
-        // ✅ Desactivar usuario
-        const user = await User.findByIdAndUpdate(
-            id,
-            { isActive: false },
-            { new: true }
-        ).select("-password");
-
+        // ✅ Obtener usuario antes del cambio
+        const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
         }
 
+        // ✅ Desactivar usuario
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { isActive: false },
+            { new: true }
+        ).select("-password");
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "UPDATE",
+            "USER",
+            updatedUser?._id.toString(),
+            updatedUser?.name as string | undefined,
+            req,
+            { before: { isActive: user.isActive }, after: { isActive: updatedUser?.isActive } },
+            `Usuario ${updatedUser?.name} desactivado`
+        );
+
         res.status(200).json({
             message: "User deactivated successfully",
-            user,
+            user: updatedUser,
         });
     } catch (error) {
         next(error);
@@ -120,21 +153,36 @@ export const activateUser = async (
     try {
         const { id } = req.params;
 
-        // ✅ Activar usuario
-        const user = await User.findByIdAndUpdate(
-            id,
-            { isActive: true },
-            { new: true }
-        ).select("-password");
-
+        // ✅ Obtener usuario antes del cambio
+        const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
         }
 
+        // ✅ Activar usuario
+        const updatedUser = await User.findByIdAndUpdate(
+            id,
+            { isActive: true },
+            { new: true }
+        ).select("-password");
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "UPDATE",
+            "USER",
+            updatedUser?._id.toString(),
+            updatedUser?.name as string | undefined,
+            req,
+            { before: { isActive: user.isActive }, after: { isActive: updatedUser?.isActive } },
+            `Usuario ${updatedUser?.name} activado`
+        );
+
         res.status(200).json({
             message: "User activated successfully",
-            user,
+            user: updatedUser,
         });
     } catch (error) {
         next(error);

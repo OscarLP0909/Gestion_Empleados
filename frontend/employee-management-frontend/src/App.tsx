@@ -16,6 +16,7 @@ import { UsersPage } from "./components/Users/UsersPage";
 import { ProfilePage } from "./components/Profile/ProfilePage";
 import { NotificationProvider } from "./context/NotificationContext";
 import { ToastContainer } from "./components/Notifications/ToastContainer";
+import { AuditPage } from "./components/Audit/AuditPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
@@ -136,6 +137,14 @@ export default function App() {
                         element={
                             <ProtectedRoute>
                                 <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/audit"
+                        element={
+                            <ProtectedRoute>
+                                <AuditPage />
                             </ProtectedRoute>
                         }
                     />

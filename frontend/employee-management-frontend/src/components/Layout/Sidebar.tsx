@@ -106,13 +106,13 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                 </>
             )}
 
-            {/* SECCIÓN: Administración (Solo ADMIN) */}
-            {isAdmin && (
+            {/* SECCIÓN: Administración (Solo HR_MANAGER y ADMIN) */}
+            {isHROrAdmin && (
                 <>
                     <SectionTitle label="Administración" />
-                    <MenuItem icon="👥" label="Usuarios" path="/users" />
+                    {isAdmin && <MenuItem icon="👥" label="Usuarios" path="/users" />}
                     <MenuItem icon="📋" label="Auditoría" path="/audit" />
-                    <MenuItem icon="⚙️" label="Configuración" path="/settings" />
+                    {isAdmin && <MenuItem icon="⚙️" label="Configuración" path="/settings" />}
                 </>
             )}
 
