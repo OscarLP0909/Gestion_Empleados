@@ -20,8 +20,8 @@ export const ContractsPage = () => {
         status: "",
         contractType: "",
         department: "",
-        sortBy: "startDate", // startDate, position, salaryAmount
-        sortOrder: "desc", // asc, desc
+        sortBy: "startDate",
+        sortOrder: "desc",
     });
 
     useEffect(() => {
@@ -41,12 +41,10 @@ export const ContractsPage = () => {
         }
     };
 
-    // Aplicar filtros y búsqueda
     const applyFilters = useCallback(
         (data: Contract[], search: string, filtersData: typeof filters) => {
             let result = data;
 
-            // Búsqueda por texto
             if (search.trim()) {
                 const searchLower = search.toLowerCase();
                 result = result.filter(
@@ -57,26 +55,22 @@ export const ContractsPage = () => {
                 );
             }
 
-            // Filtro por estado
             if (filtersData.status) {
                 result = result.filter((contract) => contract.status === filtersData.status);
             }
 
-            // Filtro por tipo de contrato
             if (filtersData.contractType) {
                 result = result.filter(
                     (contract) => contract.contractType === filtersData.contractType
                 );
             }
 
-            // Filtro por departamento
             if (filtersData.department) {
                 result = result.filter(
                     (contract) => contract.department === filtersData.department
                 );
             }
 
-            // Ordenar
             result = result.sort((a, b) => {
                 let compareA: any = a[filtersData.sortBy as keyof Contract];
                 let compareB: any = b[filtersData.sortBy as keyof Contract];
@@ -98,14 +92,12 @@ export const ContractsPage = () => {
         []
     );
 
-    // Manejar cambio en búsqueda
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchTerm(value);
         applyFilters(contracts, value, filters);
     };
 
-    // Manejar cambio en filtros
     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { name, value } = e.target;
         const newFilters = { ...filters, [name]: value };
@@ -113,7 +105,6 @@ export const ContractsPage = () => {
         applyFilters(contracts, searchTerm, newFilters);
     };
 
-    // Limpiar filtros
     const resetFilters = () => {
         setSearchTerm("");
         setFilters({
@@ -132,11 +123,9 @@ export const ContractsPage = () => {
         });
     };
 
-    // Obtener listas únicas
     const departments = Array.from(new Set(contracts.map((c) => c.department))).sort();
     const contractTypes = Array.from(new Set(contracts.map((c) => c.contractType))).sort();
 
-    // Eliminar contrato
     const handleDelete = async (id: string) => {
         if (window.confirm("¿Estás seguro de que quieres eliminar este contrato?")) {
             try {
@@ -186,7 +175,6 @@ export const ContractsPage = () => {
     return (
         <Layout>
             <div className="container-fluid">
-                {/* Header */}
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <div>
                         <h1 className="fw-bold mb-2">📋 Contratos</h1>
@@ -202,7 +190,6 @@ export const ContractsPage = () => {
                     </button>
                 </div>
 
-                {/* Búsqueda rápida */}
                 <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
                         <div className="input-group">
@@ -226,7 +213,6 @@ export const ContractsPage = () => {
                     </div>
                 </div>
 
-                {/* Filtros avanzados */}
                 {showAdvancedFilters && (
                     <div className="card border-0 shadow-sm mb-4">
                         <div className="card-body">
@@ -326,7 +312,6 @@ export const ContractsPage = () => {
                     </div>
                 )}
 
-                {/* Tabla */}
                 <div className="card border-0 shadow-sm">
                     {loading ? (
                         <div className="card-body text-center py-5">
@@ -349,6 +334,7 @@ export const ContractsPage = () => {
                                         <th>Departamento</th>
                                         <th>Salario</th>
                                         <th>Fecha Inicio</th>
+                                        <th>Fecha Fin</th>
                                         <th>Estado</th>
                                         <th>Acciones</th>
                                     </tr>
@@ -366,6 +352,13 @@ export const ContractsPage = () => {
                                             <td>
                                                 {new Date(contract.startDate).toLocaleDateString(
                                                     "es-ES"
+                                                )}
+                                            </td>
+                                            <td>
+                                                {contract.endDate ? (
+                                                    new Date(contract.endDate).toLocaleDateString("es-ES")
+                                                ) : (
+                                                    <span className="text-muted">-</span>
                                                 )}
                                             </td>
                                             <td>

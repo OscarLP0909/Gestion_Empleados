@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
-import { LoginForm } from "./components/Auth/LoginForm";
+import apiClient from "./services/api";
+import { LoginForm } from "./components/auth/LoginForm";
 import { Dashboard } from "./components/Dashboard/Dashboard";
 import { EmployeesPage } from "./components/Employees/EmployeesPage";
 import { CreateEmployeeForm } from "./components/Employees/CreateEmployeeForm";
@@ -18,142 +20,197 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { ToastContainer } from "./components/Notifications/ToastContainer";
 import { AuditPage } from "./components/Audit/AuditPage";
 
-
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
     return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
 }
 
+function AppContent() {
+    return (
+        <Router>
+            <Routes>
+                <Route path="/login" element={<LoginForm />} />
+
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/employees"
+                    element={
+                        <ProtectedRoute>
+                            <EmployeesPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/employees/new"
+                    element={
+                        <ProtectedRoute>
+                            <CreateEmployeeForm />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/employees/:id"
+                    element={
+                        <ProtectedRoute>
+                            <EmployeeDetail />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/employees/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <EditEmployeeForm />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/contracts"
+                    element={
+                        <ProtectedRoute>
+                            <ContractsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/contracts/new"
+                    element={
+                        <ProtectedRoute>
+                            <CreateContractForm />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/contracts/:id"
+                    element={
+                        <ProtectedRoute>
+                            <ContractDetail />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route
+                    path="/contracts/:id/edit"
+                    element={
+                        <ProtectedRoute>
+                            <EditContractForm />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/contract-approvals"
+                    element={
+                        <ProtectedRoute>
+                            <ContractApprovalsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/reports"
+                    element={
+                        <ProtectedRoute>
+                            <ReportsPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/users"
+                    element={
+                        <ProtectedRoute>
+                            <UsersPage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/profile"
+                    element={
+                        <ProtectedRoute>
+                            <ProfilePage />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/audit"
+                    element={
+                        <ProtectedRoute>
+                            <AuditPage />
+                        </ProtectedRoute>
+                    }
+                />
+
+                <Route path="/" element={<Navigate to="/dashboard" />} />
+            </Routes>
+            <ToastContainer />
+        </Router>
+    );
+}
+
 export default function App() {
+    const { setUser } = useAuthStore();
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            try {
+                const token = localStorage.getItem("token");
+
+                if (token) {
+                    console.log("🔍 Token encontrado, verificando sesión...");
+                    try {
+                        const response = await apiClient.get("/auth/profile");
+                        console.log("✅ Sesión válida, usuario:", response.data);
+                        setUser(response.data);
+                    } catch (error) {
+                        console.log("❌ Token inválido, limpiando...");
+                        localStorage.removeItem("token");
+                    }
+                }
+            } catch (error) {
+                console.error("Error checking auth:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkAuth();
+    }, [setUser]);
+
+    if (loading) {
+        return (
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100vh",
+                    backgroundColor: "#f5f5f5",
+                }}
+            >
+                <div className="text-center">
+                    <div className="spinner-border text-primary mb-3" role="status">
+                        <span className="visually-hidden">Cargando...</span>
+                    </div>
+                    <p className="text-muted">Cargando aplicación...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <NotificationProvider>
-            <Router>
-                <Routes>
-                    <Route path="/login" element={<LoginForm />} />
-
-                    <Route
-                        path="/dashboard"
-                        element={
-                            <ProtectedRoute>
-                                <Dashboard />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/employees"
-                        element={
-                            <ProtectedRoute>
-                                <EmployeesPage />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/employees/new"
-                        element={
-                            <ProtectedRoute>
-                                <CreateEmployeeForm />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/employees/:id"
-                        element={
-                            <ProtectedRoute>
-                                <EmployeeDetail />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/employees/:id/edit"
-                        element={
-                            <ProtectedRoute>
-                                <EditEmployeeForm />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/contracts"
-                        element={
-                            <ProtectedRoute>
-                                <ContractsPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/contracts/new"
-                        element={
-                            <ProtectedRoute>
-                                <CreateContractForm />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/contracts/:id"
-                        element={
-                            <ProtectedRoute>
-                                <ContractDetail />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route
-                        path="/contracts/:id/edit"
-                        element={
-                            <ProtectedRoute>
-                                <EditContractForm />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/contract-approvals"
-                        element={
-                            <ProtectedRoute>
-                                <ContractApprovalsPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/reports"
-                        element={
-                            <ProtectedRoute>
-                                <ReportsPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/users"
-                        element={
-                            <ProtectedRoute>
-                                <UsersPage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/profile"
-                        element={
-                            <ProtectedRoute>
-                                <ProfilePage />
-                            </ProtectedRoute>
-                        }
-                    />
-                    <Route
-                        path="/audit"
-                        element={
-                            <ProtectedRoute>
-                                <AuditPage />
-                            </ProtectedRoute>
-                        }
-                    />
-
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
-                </Routes>
-            </Router>
-            <ToastContainer />
+            <AppContent />
         </NotificationProvider>
     );
 }
