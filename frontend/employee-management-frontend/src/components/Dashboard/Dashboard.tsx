@@ -505,6 +505,7 @@ export const Dashboard = () => {
                                                     <th>Departamento</th>
                                                     <th>Salario</th>
                                                     <th>Fecha Inicio</th>
+                                                    <th>Fecha Fin</th>
                                                     <th>Estado</th>
                                                 </tr>
                                             </thead>
@@ -520,6 +521,17 @@ export const Dashboard = () => {
                                                         <td>
                                                             {new Date(contract.startDate).toLocaleDateString(
                                                                 "es-ES"
+                                                            )}
+                                                        </td>
+                                                        <td>
+                                                            {contract.endDate ? (
+                                                                <span>
+                                                                    {new Date(contract.endDate).toLocaleDateString(
+                                                                        "es-ES"
+                                                                    )}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-muted">-</span>
                                                             )}
                                                         </td>
                                                         <td>
