@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { profileService } from "../../services/profileService";
+import { useNotification } from "../../hooks/useNotification";
 import { useAuthStore } from "../../store/authStore";
 import { Layout } from "../Layout/Layout";
 import type { User } from "../../types/user";
@@ -47,12 +48,11 @@ const InputField = ({
 
 export const ProfilePage = () => {
     const navigate = useNavigate();
-    const { user: authUser } = useAuthStore();
+    const notification = useNotification();
+    const { user: authUser, setUser: setAuthUser } = useAuthStore();
 
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const [editMode, setEditMode] = useState(false);
     const [showPasswordModal, setShowPasswordModal] = useState(false);
 
@@ -72,13 +72,12 @@ export const ProfilePage = () => {
 
     const fetchProfile = async () => {
         setLoading(true);
-        setError(null);
         try {
             const profileData = await profileService.getProfile();
             setUser(profileData);
             setFormData({ name: profileData.name, email: profileData.email });
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al cargar perfil");
+            notification.error("Error", err.response?.data?.message || "Error al cargar perfil");
         } finally {
             setLoading(false);
         }
@@ -87,25 +86,27 @@ export const ProfilePage = () => {
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
-        if (validationErrors[name]) {
-            setValidationErrors((prev) => {
+        setValidationErrors((prev) => {
+            if (prev[name]) {
                 const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
-            });
-        }
+            }
+            return prev;
+        });
     };
 
     const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setPasswordData((prev) => ({ ...prev, [name]: value }));
-        if (validationErrors[name]) {
-            setValidationErrors((prev) => {
+        setValidationErrors((prev) => {
+            if (prev[name]) {
                 const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
-            });
-        }
+            }
+            return prev;
+        });
     };
 
     const validateProfileForm = () => {
@@ -141,7 +142,6 @@ export const ProfilePage = () => {
 
         if (!validateProfileForm()) return;
 
-        setError(null);
         try {
             const updatedUser = await profileService.updateProfile({
                 name: formData.name,
@@ -149,11 +149,11 @@ export const ProfilePage = () => {
             });
 
             setUser(updatedUser);
+            setAuthUser(updatedUser);
             setEditMode(false);
-            setSuccess("✅ Perfil actualizado correctamente");
-            setTimeout(() => setSuccess(null), 3000);
+            notification.success("¡Éxito!", "Perfil actualizado correctamente");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al actualizar perfil");
+            notification.error("Error", err.response?.data?.message || "Error al actualizar perfil");
         }
     };
 
@@ -162,7 +162,6 @@ export const ProfilePage = () => {
 
         if (!validatePasswordForm()) return;
 
-        setError(null);
         try {
             await profileService.changePassword(
                 passwordData.currentPassword,
@@ -175,10 +174,9 @@ export const ProfilePage = () => {
                 confirmPassword: "",
             });
             setShowPasswordModal(false);
-            setSuccess("✅ Contraseña actualizada correctamente");
-            setTimeout(() => setSuccess(null), 3000);
+            notification.success("¡Éxito!", "Contraseña actualizada correctamente");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al cambiar contraseña");
+            notification.error("Error", err.response?.data?.message || "Error al cambiar contraseña");
         }
     };
 
@@ -251,29 +249,6 @@ export const ProfilePage = () => {
                         Administra tu información personal y seguridad
                     </p>
                 </div>
-
-                {/* Mensajes */}
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setError(null)}
-                        ></button>
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>{success}</strong>
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setSuccess(null)}
-                        ></button>
-                    </div>
-                )}
 
                 <div className="d-flex justify-content-center">
                     <div style={{ width: "100%", maxWidth: "600px" }}>

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useEmployeeForm } from "../../hooks/useEmployeeForm";
+import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
 import type { CreateEmployeeInput } from "../../types/employee";
 
@@ -50,7 +51,8 @@ const InputField = ({
 
 export const CreateEmployeeForm = () => {
     const navigate = useNavigate();
-    const { createEmployee, loading, error, success } = useEmployeeForm();
+    const notification = useNotification();
+    const { createEmployee, loading } = useEmployeeForm();
 
     const [formData, setFormData] = useState<CreateEmployeeInput>({
         name: "",
@@ -77,14 +79,15 @@ export const CreateEmployeeForm = () => {
             [name]: value,
         }));
 
-        if (validationErrors[name]) {
-            setValidationErrors((prev) => {
+        setValidationErrors((prev) => {
+            if (prev[name]) {
                 const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
-            });
-        }
-    }, [validationErrors]);
+            }
+            return prev;
+        });
+    }, []);
 
     const validateForm = () => {
         const errors: { [key: string]: string } = {};
@@ -137,6 +140,7 @@ export const CreateEmployeeForm = () => {
 
         const isSuccess = await createEmployee(dataToSend);
         if (isSuccess) {
+            notification.success("¡Éxito!", "Empleado creado correctamente");
             setTimeout(() => {
                 navigate("/employees");
             }, 1500);
@@ -159,19 +163,6 @@ export const CreateEmployeeForm = () => {
                         Completa el formulario para agregar un nuevo empleado al sistema
                     </p>
                 </div>
-
-                {/* Mensajes */}
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>¡Éxito!</strong> Empleado creado correctamente. Redirigiendo...
-                    </div>
-                )}
 
                 {/* Formulario */}
                 <div className="d-flex justify-content-center">
