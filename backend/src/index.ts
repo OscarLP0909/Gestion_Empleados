@@ -8,6 +8,7 @@ import cors from "cors";
 import employeeRouter from './routes/employeeRouter.js';
 import contractRouter from './routes/contractRouter.js';
 import userRouter from './routes/userRouter.js';
+import auditRouter from "./routes/auditRouter.js";
 
 const app = express();
 
@@ -49,6 +50,7 @@ app.use("/auth", authRouter);
 app.use("/employee", employeeRouter);
 app.use("/contract", contractRouter);
 app.use("/user", userRouter);
+app.use("/audit", auditRouter);
 
 
 

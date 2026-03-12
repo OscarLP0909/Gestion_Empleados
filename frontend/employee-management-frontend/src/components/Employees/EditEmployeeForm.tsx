@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { employeeService } from "../../services/employeeService";
+import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
 import type { CreateEmployeeInput, Employee } from "../../types/employee";
 
@@ -51,10 +52,9 @@ const InputField = ({
 export const EditEmployeeForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const notification = useNotification();
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [validationErrors, setValidationErrors] = useState<{
         [key: string]: string;
     }>({});
@@ -78,7 +78,6 @@ export const EditEmployeeForm = () => {
 
     const fetchEmployee = async () => {
         setLoading(true);
-        setError(null);
         try {
             if (id) {
                 const data = await employeeService.getById(id);
@@ -94,7 +93,7 @@ export const EditEmployeeForm = () => {
                 });
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al cargar empleado");
+            notification.error("Error", err.response?.data?.message || "Error al cargar empleado");
         } finally {
             setLoading(false);
         }
@@ -110,14 +109,15 @@ export const EditEmployeeForm = () => {
             [name]: value,
         }));
 
-        if (validationErrors[name]) {
-            setValidationErrors((prev) => {
+        setValidationErrors((prev) => {
+            if (prev[name]) {
                 const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
-            });
-        }
-    }, [validationErrors]);
+            }
+            return prev;
+        });
+    }, []);
 
     const validateForm = () => {
         const errors: { [key: string]: string } = {};
@@ -149,8 +149,6 @@ export const EditEmployeeForm = () => {
         }
 
         setSaving(true);
-        setError(null);
-        setSuccess(false);
 
         try {
             const dataToSend: CreateEmployeeInput = {
@@ -174,13 +172,13 @@ export const EditEmployeeForm = () => {
             }
             if (id) {
                 await employeeService.update(id, dataToSend);
-                setSuccess(true);
+                notification.success("¡Éxito!", "Empleado actualizado correctamente");
                 setTimeout(() => {
                     navigate(`/employees/${id}`);
                 }, 1500);
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al actualizar empleado");
+            notification.error("Error", err.response?.data?.message || "Error al actualizar empleado");
         } finally {
             setSaving(false);
         }
@@ -214,19 +212,6 @@ export const EditEmployeeForm = () => {
                         Actualiza la información del empleado
                     </p>
                 </div>
-
-                {/* Mensajes */}
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>¡Éxito!</strong> Empleado actualizado correctamente. Redirigiendo...
-                    </div>
-                )}
 
                 {/* Formulario */}
                 <div className="d-flex justify-content-center">

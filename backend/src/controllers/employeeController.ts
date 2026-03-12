@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { Employee } from "../db/models/Employee.js";
+import { createAuditLog } from "../services/auditService.js";
 import { Types } from "mongoose";
 
 export const createEmployee = async (req: Request, res: Response, next: NextFunction) => {
@@ -35,6 +36,20 @@ export const createEmployee = async (req: Request, res: Response, next: NextFunc
             country: country.trim()
         });
         await employee.save();
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "CREATE",
+            "EMPLOYEE",
+            employee._id.toString(),
+            `${employee.name} ${employee.surname}`,
+            req,
+            { after: req.body },
+            `Empleado ${employee.name} ${employee.surname} creado`
+        );
+
         return res.status(201).json(employee);
 
     } catch (error) {
@@ -98,6 +113,9 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
+        // Guardar datos antes del cambio para auditoría
+        const before = employee.toObject();
+
         // Verificar si el email o NIF ya existen en otro empleado
         if (email || nif) {
             const existingEmployee = await Employee.findOne({
@@ -125,6 +143,19 @@ export const updateEmployee = async (req: Request, res: Response, next: NextFunc
             { new: true }
         );
 
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "UPDATE",
+            "EMPLOYEE",
+            updatedEmployee?._id.toString(),
+            `${updatedEmployee?.name} ${updatedEmployee?.surname}`,
+            req,
+            { before, after: req.body },
+            `Empleado ${updatedEmployee?.name} ${updatedEmployee?.surname} actualizado`
+        );
+
         res.status(200).json(updatedEmployee);
     } catch (error) {
         next(error);
@@ -135,16 +166,29 @@ export const deleteEmployee = async (req: Request, res: Response, next: NextFunc
     try {
         const { id } = req.params;
 
-        const employee = await Employee.findByIdAndDelete(id);
-
+        const employee = await Employee.findById(id);
         if (!employee) {
             res.status(404).json({ message: "Employee not found" });
             return;
         }
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "DELETE",
+            "EMPLOYEE",
+            employee._id.toString(),
+            `${employee.name} ${employee.surname}`,
+            req,
+            { before: employee.toObject() },
+            `Empleado ${employee.name} ${employee.surname} eliminado`
+        );
+
+        await Employee.findByIdAndDelete(id);
 
         res.status(200).json({ message: "Employee deleted successfully" });
     } catch (error) {
         next(error);
     }
 };
-

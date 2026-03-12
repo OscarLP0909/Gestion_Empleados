@@ -10,19 +10,28 @@ declare global {
     }
 }
 
-export const authorizeRole = (...allowedRoles: string[]) => {
+export const authorizeRole = (allowedRoles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-        if (!req.user) {
-            return res.status(401).json({ message: "Unauthorized" });
-        }
+        try {
+            const user = req.user as any;
 
-        if (!allowedRoles.includes(req.user.role)) {
-            return res.status(403).json({
-                message: `Forbidden: This action requires one of these roles: ${allowedRoles.join(", ")}`,
-            });
-        }
+            if (!user) {
+                res.status(401).json({ message: "Unauthorized" });
+                return;
+            }
 
-        next();
+            // ✅ Verificar que el role esté en allowedRoles
+            if (!allowedRoles.includes(user.role)) {
+                res.status(403).json({ 
+                    message: `Access denied. Required roles: ${allowedRoles.join(", ")}. Your role: ${user.role}` 
+                });
+                return;
+            }
+
+            next();
+        } catch (error) {
+            res.status(500).json({ message: "Authorization error" });
+        }
     };
 };
 

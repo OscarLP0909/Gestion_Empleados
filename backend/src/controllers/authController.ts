@@ -26,45 +26,50 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
     )(req, res, next);
 };
 
-export const register = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
-    console.log("REGISTER BODY: ", req.body);
+export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password } = req.body;
+        const { email, password, name, role } = req.body;
 
-        if (!email || !password) {
-            res.status(401).json({
-                message: "Email and password are required",
+        // Validar campos requeridos
+        if (!email || !password || !name) {
+            res.status(400).json({
+                message: "Email, nombre y contraseña son requeridos"
             });
             return;
         }
 
-        const exists = await User.findOne({ email });
-        if (exists) {
-            res.status(409).json({ message: "User already exists" });
+        // Validar que el email no exista
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            res.status(400).json({ message: "El usuario ya existe" });
             return;
         }
 
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-        // ✅ ACTUALIZADO: Agregar role default
-        const user = new User({
+        // Crear usuario
+        const newUser = new User({
             email,
-            password: hashedPassword,
-            role: "EMPLOYEE", // ← Por defecto, nuevos usuarios son EMPLOYEE
+            password,
+            name,
+            role: role || "EMPLOYEE",  // Agregar rol, por defecto EMPLOYEE
+            isActive: true,
         });
-        await user.save();
-        return res
-            .status(201)
-            .json({ message: "User created successfully" });
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: "Usuario registrado correctamente",
+            user: {
+                _id: newUser._id,
+                email: newUser.email,
+                name: newUser.name,
+                role: newUser.role,
+                isActive: newUser.isActive,
+            },
+        });
     } catch (error) {
         next(error);
     }
 };
-
 /**
  * GET /auth/profile
  * Obtener perfil del usuario logueado

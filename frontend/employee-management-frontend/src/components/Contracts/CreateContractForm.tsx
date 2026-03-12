@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useContractForm } from "../../hooks/useContractForm";
+import { useNotification } from "../../hooks/useNotification";
 import { employeeService } from "../../services/employeeService";
 import { Layout } from "../Layout/Layout";
 import type { CreateContractInput } from "../../types/contract";
@@ -92,7 +93,8 @@ const SelectField = ({
 
 export const CreateContractForm = () => {
     const navigate = useNavigate();
-    const { createContract, loading, error, success } = useContractForm();
+    const notification = useNotification();
+    const { createContract, loading } = useContractForm();
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [loadingEmployees, setLoadingEmployees] = useState(false);
     const [validationErrors, setValidationErrors] = useState<{
@@ -123,7 +125,7 @@ export const CreateContractForm = () => {
             const data = await employeeService.getAll();
             setEmployees(data);
         } catch (err) {
-            console.error("Error loading employees:", err);
+            notification.error("Error", "No se pudieron cargar los empleados");
         } finally {
             setLoadingEmployees(false);
         }
@@ -181,7 +183,7 @@ export const CreateContractForm = () => {
             department: formData.department,
             category: formData.category,
             position: formData.position,
-            status: "PENDIENTE",  // ← AGREGAR ESTO
+            status: "PENDIENTE",
         };
 
         if (formData.endDate?.trim()) {
@@ -190,6 +192,7 @@ export const CreateContractForm = () => {
 
         const isSuccess = await createContract(dataToSend);
         if (isSuccess) {
+            notification.success("¡Éxito!", "Contrato creado correctamente");
             setTimeout(() => {
                 navigate("/contracts");
             }, 1500);
@@ -211,18 +214,6 @@ export const CreateContractForm = () => {
                         Completa el formulario para agregar un nuevo contrato al sistema
                     </p>
                 </div>
-
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>¡Éxito!</strong> Contrato creado correctamente. Redirigiendo...
-                    </div>
-                )}
 
                 <div className="d-flex justify-content-center">
                     <div style={{ width: "100%", maxWidth: "700px" }}>

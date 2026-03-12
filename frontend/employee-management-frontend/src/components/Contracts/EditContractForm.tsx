@@ -2,13 +2,10 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { contractService } from "../../services/contractService";
 import { employeeService } from "../../services/employeeService";
+import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
-import type { CreateContractInput, Contract } from "../../types/contract";
+import type { CreateContractInput } from "../../types/contract";
 import type { Employee } from "../../types/employee";
-
-type FormContractInput = CreateContractInput & {
-    endDate?: string;
-};
 
 const InputField = ({
     label,
@@ -96,26 +93,26 @@ const SelectField = ({
 export const EditContractForm = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const notification = useNotification();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState(false);
     const [employees, setEmployees] = useState<Employee[]>([]);
     const [validationErrors, setValidationErrors] = useState<{
         [key: string]: string;
     }>({});
 
-    const [formData, setFormData] = useState<FormContractInput>({
+    const [formData, setFormData] = useState<CreateContractInput & { endDate?: string }>({
         employeeId: "",
         contractType: "" as any,
         workdayType: "" as any,
         salaryType: "" as any,
         salaryAmount: 0,
         startDate: "",
+        endDate: "",
         department: "",
         category: "",
         position: "",
-        status: "" as any
+        status: "PENDIENTE" as any
     });
 
     useEffect(() => {
@@ -145,7 +142,7 @@ export const EditContractForm = () => {
                     });
                 }
             } catch (err: any) {
-                setError(err.response?.data?.message || "Error al cargar contrato");
+                notification.error("Error", err.response?.data?.message || "Error al cargar contrato");
             } finally {
                 setLoading(false);
             }
@@ -164,14 +161,15 @@ export const EditContractForm = () => {
             [name]: name === "salaryAmount" ? parseFloat(value) || 0 : value,
         }));
 
-        if (validationErrors[name]) {
-            setValidationErrors((prev) => {
+        setValidationErrors((prev) => {
+            if (prev[name]) {
                 const newErrors = { ...prev };
                 delete newErrors[name];
                 return newErrors;
-            });
-        }
-    }, [validationErrors]);
+            }
+            return prev;
+        });
+    }, []);
 
     const validateForm = () => {
         const errors: { [key: string]: string } = {};
@@ -197,21 +195,10 @@ export const EditContractForm = () => {
         if (!validateForm()) return;
 
         setSaving(true);
-        setError(null);
-        setSuccess(false);
 
         try {
             const dataToSend: CreateContractInput = {
-                employeeId: formData.employeeId,
-                contractType: formData.contractType as any,
-                workdayType: formData.workdayType as any,
-                salaryType: formData.salaryType as any,
-                salaryAmount: formData.salaryAmount,
-                startDate: formData.startDate,
-                department: formData.department,
-                category: formData.category,
-                position: formData.position,
-                status: formData.status
+                ...formData,
             };
 
             if (formData.endDate?.trim()) {
@@ -220,13 +207,13 @@ export const EditContractForm = () => {
 
             if (id) {
                 await contractService.update(id, dataToSend);
-                setSuccess(true);
+                notification.success("¡Éxito!", "Contrato actualizado correctamente");
                 setTimeout(() => {
                     navigate(`/contracts/${id}`);
                 }, 1500);
             }
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al actualizar contrato");
+            notification.error("Error", err.response?.data?.message || "Error al actualizar contrato");
         } finally {
             setSaving(false);
         }
@@ -260,18 +247,6 @@ export const EditContractForm = () => {
                         Actualiza la información del contrato
                     </p>
                 </div>
-
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>¡Éxito!</strong> Contrato actualizado correctamente. Redirigiendo...
-                    </div>
-                )}
 
                 <div className="d-flex justify-content-center">
                     <div style={{ width: "100%", maxWidth: "700px" }}>
@@ -307,6 +282,7 @@ export const EditContractForm = () => {
                                                     { value: "PENDIENTE", label: "Pendiente" },
                                                     { value: "APROBADO", label: "Aprobado" },
                                                     { value: "RECHAZADO", label: "Rechazado" },
+                                                    { value: "ACTIVO", label: "Activo" },
                                                     { value: "FINALIZADO", label: "Finalizado" },
                                                 ]}
                                             />

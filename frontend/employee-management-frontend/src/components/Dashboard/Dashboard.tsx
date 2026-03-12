@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useContracts } from "../../hooks/useContract";
 import { useEmployees } from "../../hooks/useEmployees";
 import { useContractsAdvanced } from "../../hooks/useContractsAdvanced";
+import { useAuth } from "../../hooks/useAuth";  // ← AGREGAR
 import { employeeService } from "../../services/employeeService";
 import { Layout } from "../Layout/Layout";
 import { useState, useEffect } from "react";
@@ -39,6 +40,7 @@ const StatCard = ({
 
 export const Dashboard = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();  // ← AGREGAR
     const { contractCount, activeContractCount, finalizedContractCount } = useContracts();
     const { employeeCount, loading: employeesLoading } = useEmployees();
     const {
@@ -382,14 +384,18 @@ export const Dashboard = () => {
                                             📊 Ver Reportes
                                         </button>
                                     </div>
-                                    <div className="col-md-6 col-lg-4">
-                                        <button
-                                            onClick={() => navigate("/users")}
-                                            className="btn btn-secondary w-100"
-                                        >
-                                            👥 Gestionar Usuarios
-                                        </button>
-                                    </div>
+
+                                    {/* Solo para ADMIN */}
+                                    {user?.role === "ADMIN" && (
+                                        <div className="col-md-6 col-lg-4">
+                                            <button
+                                                onClick={() => navigate("/users")}
+                                                className="btn btn-secondary w-100"
+                                            >
+                                                👥 Gestionar Usuarios
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -1,16 +1,16 @@
 import { useState, useEffect } from "react";
 import { contractService } from "../../services/contractService";
 import { employeeService } from "../../services/employeeService";
+import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
 import type { Contract } from "../../types/contract";
 import type { Employee } from "../../types/employee";
 
 export const ContractApprovalsPage = () => {
+    const notification = useNotification();
     const [contracts, setContracts] = useState<Contract[]>([]);
     const [employees, setEmployees] = useState<Map<string, Employee>>(new Map());
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const [approving, setApproving] = useState<string | null>(null);
 
     useEffect(() => {
@@ -19,7 +19,6 @@ export const ContractApprovalsPage = () => {
 
     const fetchData = async () => {
         setLoading(true);
-        setError(null);
         try {
             const [contractsResponse, employeesResponse] = await Promise.all([
                 contractService.getAll(),
@@ -36,7 +35,10 @@ export const ContractApprovalsPage = () => {
             });
             setEmployees(employeeMap);
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al cargar contratos pendientes");
+            notification.error(
+                "Error",
+                err.response?.data?.message || "Error al cargar contratos pendientes"
+            );
         } finally {
             setLoading(false);
         }
@@ -51,7 +53,6 @@ export const ContractApprovalsPage = () => {
         if (!window.confirm("¿Aprobar este contrato?")) return;
 
         setApproving(contractId);
-        setError(null);
         try {
             // Determinar si el contrato debe ser ACTIVO o APROBADO
             const today = new Date();
@@ -65,10 +66,12 @@ export const ContractApprovalsPage = () => {
 
             setContracts(contracts.filter((c) => (c as any).id !== contractId));
 
-            setSuccess("✅ Contrato aprobado correctamente");
-            setTimeout(() => setSuccess(null), 3000);
+            notification.success("¡Éxito!", "Contrato aprobado correctamente");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al aprobar contrato");
+            notification.error(
+                "Error",
+                err.response?.data?.message || "Error al aprobar contrato"
+            );
         } finally {
             setApproving(null);
         }
@@ -78,17 +81,18 @@ export const ContractApprovalsPage = () => {
         if (!window.confirm("¿Rechazar este contrato?")) return;
 
         setApproving(contractId);
-        setError(null);
         try {
             await contractService.updateStatus(contractId, "RECHAZADO");
 
             // Remover del listado
             setContracts(contracts.filter((c) => (c as any).id !== contractId));
 
-            setSuccess("✅ Contrato rechazado correctamente");
-            setTimeout(() => setSuccess(null), 3000);
+            notification.success("¡Éxito!", "Contrato rechazado correctamente");
         } catch (err: any) {
-            setError(err.response?.data?.message || "Error al rechazar contrato");
+            notification.error(
+                "Error",
+                err.response?.data?.message || "Error al rechazar contrato"
+            );
         } finally {
             setApproving(null);
         }
@@ -104,29 +108,6 @@ export const ContractApprovalsPage = () => {
                         Revisa y aprueba los contratos pendientes
                     </p>
                 </div>
-
-                {/* Mensajes */}
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setError(null)}
-                        ></button>
-                    </div>
-                )}
-
-                {success && (
-                    <div className="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>{success}</strong>
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setSuccess(null)}
-                        ></button>
-                    </div>
-                )}
 
                 {/* Contratos */}
                 <div className="row g-4">

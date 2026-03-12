@@ -7,8 +7,11 @@ dotenv.config();
 
 const PORT = process.env.PORT;
 
+
+setInterval(updateContractStatus, 24 * 60 * 60 * 1000); // Se ejecuta diariamente a las 00
+setInterval(updateContractStatus, 60 * 60 * 1000); // Se ejecuta cada hora
 updateContractStatus();
-setInterval(updateContractStatus, 24 * 60 * 60 * 1000);
+
 
 async function startServer() {
     try {

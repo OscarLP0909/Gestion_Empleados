@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { Types } from "mongoose";
 import { Contract } from "../db/models/Contract.js";
 import { Employee } from "../db/models/Employee.js";
+import { createAuditLog } from "../services/auditService.js";
 
 export const createContract = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -34,6 +35,20 @@ export const createContract = async (req: Request, res: Response, next: NextFunc
         });
 
         await contract.save();
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "CREATE",
+            "CONTRACT",
+            contract._id.toString(),
+            `${position.trim()} - ${employee.name} ${employee.surname}`,
+            req,
+            { after: req.body },
+            `Contrato ${position.trim()} para ${employee.name} ${employee.surname} creado`
+        );
+
         res.status(201).json(contract);
 
     } catch (error) {
@@ -67,11 +82,26 @@ export const getContractById = async (req: Request, res: Response, next: NextFun
 export const deleteContract = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const contract = await Contract.findByIdAndDelete(id);
+        const contract = await Contract.findById(id);
         if (!contract) {
             res.status(404).json({ message: "Contract not found" });
             return;
         }
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "DELETE",
+            "CONTRACT",
+            contract._id.toString(),
+            contract.position as string | undefined,
+            req,
+            { before: contract.toObject() },
+            `Contrato ${contract.position} eliminado`
+        );
+
+        await Contract.findByIdAndDelete(id);
         return res.status(200).json({ message: "Contract deleted successfully" });
     } catch (error) {
         next(error);
@@ -144,6 +174,9 @@ export const updateContract = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
+        // Guardar datos antes del cambio para auditoría
+        const before = contract.toObject();
+
         const updatedContract = await Contract.findByIdAndUpdate(
             id,
             {
@@ -162,6 +195,20 @@ export const updateContract = async (req: Request, res: Response, next: NextFunc
             },
             { new: true }
         );
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "UPDATE",
+            "CONTRACT",
+            updatedContract?._id.toString(),
+            (updatedContract?.position as string | undefined),
+            req,
+            { before, after: req.body },
+            `Contrato ${updatedContract?.position} actualizado`
+        );
+
         res.status(200).json(updatedContract);
     } catch (error) {
         next(error);
@@ -179,10 +226,24 @@ export const updateStatus = async (req: Request, res: Response, next: NextFuncti
             return;
         }
 
+        const oldStatus = contract.status;
         const updatedContract = await Contract.findByIdAndUpdate(
             id,
             { status: status ?? contract.status },
-            { new: true }  
+            { new: true }
+        );
+
+        // ← AGREGAR AUDITORÍA
+        await createAuditLog(
+            (req as any).user._id.toString(),
+            (req as any).user.name,
+            "STATUS_CHANGE",
+            "CONTRACT",
+            updatedContract?._id.toString(),
+            (updatedContract?.position as string | undefined),
+            req,
+            { before: { status: oldStatus }, after: { status: updatedContract?.status } },
+            `Estado del contrato ${updatedContract?.position} cambió de ${oldStatus} a ${updatedContract?.status}`
         );
 
         res.status(200).json(updatedContract);

@@ -14,6 +14,9 @@ import { ContractApprovalsPage } from "./components/Contracts/ContractApprovalsP
 import { ReportsPage } from "./components/Reports/ReportsPage";
 import { UsersPage } from "./components/Users/UsersPage";
 import { ProfilePage } from "./components/Profile/ProfilePage";
+import { NotificationProvider } from "./context/NotificationContext";
+import { ToastContainer } from "./components/Notifications/ToastContainer";
+import { AuditPage } from "./components/Audit/AuditPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
@@ -22,123 +25,134 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 export default function App() {
     return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<LoginForm />} />
+        <NotificationProvider>
+            <Router>
+                <Routes>
+                    <Route path="/login" element={<LoginForm />} />
 
-                <Route
-                    path="/dashboard"
-                    element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/employees"
-                    element={
-                        <ProtectedRoute>
-                            <EmployeesPage />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/employees"
+                        element={
+                            <ProtectedRoute>
+                                <EmployeesPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/employees/new"
-                    element={
-                        <ProtectedRoute>
-                            <CreateEmployeeForm />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/employees/:id"
-                    element={
-                        <ProtectedRoute>
-                            <EmployeeDetail />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/employees/new"
+                        element={
+                            <ProtectedRoute>
+                                <CreateEmployeeForm />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/employees/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EmployeeDetail />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/employees/:id/edit"
-                    element={
-                        <ProtectedRoute>
-                            <EditEmployeeForm />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/employees/:id/edit"
+                        element={
+                            <ProtectedRoute>
+                                <EditEmployeeForm />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/contracts"
-                    element={
-                        <ProtectedRoute>
-                            <ContractsPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/contracts/new"
-                    element={
-                        <ProtectedRoute>
-                            <CreateContractForm />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/contracts"
+                        element={
+                            <ProtectedRoute>
+                                <ContractsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contracts/new"
+                        element={
+                            <ProtectedRoute>
+                                <CreateContractForm />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/contracts/:id"
-                    element={
-                        <ProtectedRoute>
-                            <ContractDetail />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/contracts/:id"
+                        element={
+                            <ProtectedRoute>
+                                <ContractDetail />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route
-                    path="/contracts/:id/edit"
-                    element={
-                        <ProtectedRoute>
-                            <EditContractForm />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/contract-approvals"
-                    element={
-                        <ProtectedRoute>
-                            <ContractApprovalsPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/reports"
-                    element={
-                        <ProtectedRoute>
-                            <ReportsPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/users"
-                    element={
-                        <ProtectedRoute>
-                            <UsersPage />
-                        </ProtectedRoute>
-                    }
-                />
-                <Route
-                    path="/profile"
-                    element={
-                        <ProtectedRoute>
-                            <ProfilePage />
-                        </ProtectedRoute>
-                    }
-                />
+                    <Route
+                        path="/contracts/:id/edit"
+                        element={
+                            <ProtectedRoute>
+                                <EditContractForm />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/contract-approvals"
+                        element={
+                            <ProtectedRoute>
+                                <ContractApprovalsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/reports"
+                        element={
+                            <ProtectedRoute>
+                                <ReportsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/users"
+                        element={
+                            <ProtectedRoute>
+                                <UsersPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/profile"
+                        element={
+                            <ProtectedRoute>
+                                <ProfilePage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/audit"
+                        element={
+                            <ProtectedRoute>
+                                <AuditPage />
+                            </ProtectedRoute>
+                        }
+                    />
 
-                <Route path="/" element={<Navigate to="/dashboard" />} />
-            </Routes>
-        </Router>
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                </Routes>
+            </Router>
+            <ToastContainer />
+        </NotificationProvider>
     );
 }
