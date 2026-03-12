@@ -15,7 +15,7 @@ export const getUsers = async (
 ) => {
     try {
         const users = await User.find().select("-password");
-        res.status(200).json(users);
+        res.status(200).json(users); 
     } catch (error) {
         next(error);
     }

@@ -1,13 +1,15 @@
-import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../../store/authStore";
+import { useDarkMode } from "../../hooks/useDarkMode";
 
 interface NavbarProps {
-    onMenuToggle: () => void;
+    onToggleSidebar: () => void;
 }
 
-export const Navbar = ({ onMenuToggle }: NavbarProps) => {
-    const { user, logout } = useAuth();
+export const Navbar = ({ onToggleSidebar }: NavbarProps) => {
     const navigate = useNavigate();
+    const { user, logout } = useAuthStore();
+    const { isDarkMode, toggleDarkMode } = useDarkMode();
 
     const handleLogout = () => {
         logout();
@@ -15,70 +17,73 @@ export const Navbar = ({ onMenuToggle }: NavbarProps) => {
     };
 
     return (
-        <nav className="navbar navbar-dark bg-dark shadow-sm" style={{ backgroundColor: "#1a1a1a !important" }}>
+        <nav className="navbar navbar-expand-lg navbar-dark bg-dark border-bottom">
             <div className="container-fluid">
+                {/* Botón hamburguesa */}
+                <button
+                    className="btn btn-dark me-3"
+                    onClick={onToggleSidebar}
+                    style={{ borderColor: "rgba(255,255,255,0.1)" }}
+                >
+                    ☰
+                </button>
+
+                {/* Logo */}
+                <span
+                    className="navbar-brand fw-bold cursor-pointer"
+                    onClick={() => navigate("/dashboard")}
+                    style={{ cursor: "pointer" }}
+                >
+                    📊 Gestión de Empleados
+                </span>
+
+                {/* Spacer */}
+                <div className="ms-auto"></div>
+
+                {/* Controles derecha */}
                 <div className="d-flex align-items-center gap-3">
+                    {/* Botón Dark Mode */}
                     <button
-                        onClick={onMenuToggle}
-                        className="btn btn-dark border-0"
-                        style={{
-                            fontSize: "22px",
-                            padding: "6px 12px",
-                            cursor: "pointer",
-                            transition: "all 0.3s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = "#333";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.backgroundColor = "transparent";
-                        }}
+                        className="btn btn-outline-light"
+                        onClick={toggleDarkMode}
+                        title="Toggle Dark Mode"
+                        style={{ borderColor: "rgba(255,255,255,0.3)" }}
                     >
-                        ☰
+                        {isDarkMode ? "☀️ Light" : "🌙 Dark"}
                     </button>
-                    <span className="navbar-brand mb-0 h5" style={{ fontWeight: "600" }}>
-                        📊 Gestión de Empleados
-                    </span>
-                </div>
-                <div className="d-flex align-items-center gap-3">
-                    <div className="text-white small d-flex flex-column align-items-end">
-                        <div style={{ fontSize: "13px" }}>
-                            Hola, <strong>{user?.name || user?.email}</strong>
-                        </div>
-                        <div
-                            className="badge"
-                            style={{
-                                backgroundColor:
-                                    user?.role === "ADMIN"
-                                        ? "#dc3545"
-                                        : user?.role === "HR_MANAGER"
-                                        ? "#0d6efd"
-                                        : "#6c757d",
-                                marginTop: "4px",
-                                fontSize: "11px",
-                                padding: "4px 8px",
-                            }}
-                        >
-                            {user?.role}
+
+                    {/* Información del usuario */}
+                    <div className="text-light d-flex align-items-center gap-2">
+                        <span className="badge bg-primary">{user?.role}</span>
+                        <div className="dropdown">
+                            <button
+                                className="btn btn-dark btn-sm dropdown-toggle text-light"
+                                type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                            >
+                                👤 {user?.name}
+                            </button>
+                            <ul className="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <button
+                                        className="dropdown-item"
+                                        onClick={() => navigate("/profile")}
+                                    >
+                                        Mi Perfil
+                                    </button>
+                                </li>
+                                <li>
+                                    <hr className="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <button className="dropdown-item text-danger" onClick={handleLogout}>
+                                        🚪 Logout
+                                    </button>
+                                </li>
+                            </ul>
                         </div>
                     </div>
-                    <button
-                        onClick={handleLogout}
-                        className="btn btn-danger"
-                        style={{
-                            fontSize: "12px",
-                            padding: "6px 12px",
-                            transition: "all 0.2s ease",
-                        }}
-                        onMouseEnter={(e) => {
-                            e.currentTarget.style.transform = "translateY(-2px)";
-                        }}
-                        onMouseLeave={(e) => {
-                            e.currentTarget.style.transform = "translateY(0)";
-                        }}
-                    >
-                        Salir
-                    </button>
                 </div>
             </div>
         </nav>

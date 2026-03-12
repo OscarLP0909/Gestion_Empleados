@@ -1,50 +1,152 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { contractService } from "../../services/contractService";
-import { employeeService } from "../../services/employeeService";
+import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
 import type { Contract } from "../../types/contract";
-import type { Employee } from "../../types/employee";
-import { exportService } from "../../services/exportService";
 
 export const ContractsPage = () => {
     const navigate = useNavigate();
+    const notification = useNotification();
+
     const [contracts, setContracts] = useState<Contract[]>([]);
-    const [employees, setEmployees] = useState<Map<string, Employee>>(new Map());
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+
+    // Estados de búsqueda y filtros
     const [searchTerm, setSearchTerm] = useState("");
+    const [filters, setFilters] = useState({
+        status: "",
+        contractType: "",
+        department: "",
+        sortBy: "startDate", // startDate, position, salaryAmount
+        sortOrder: "desc", // asc, desc
+    });
 
     useEffect(() => {
-        fetchData();
+        fetchContracts();
     }, []);
 
-    const fetchData = async () => {
+    const fetchContracts = async () => {
         setLoading(true);
-        setError(null);
         try {
-            const [contractsData, employeesData] = await Promise.all([
-                contractService.getAll(),
-                employeeService.getAll(),
-            ]);
-            setContracts(contractsData);
-
-            // Crear un mapa de empleados por ID
-            const employeeMap = new Map();
-            employeesData.forEach((emp) => {
-                employeeMap.set((emp as any).id, emp);
-            });
-            setEmployees(employeeMap);
-        } catch (err: any) {
-            setError(err.response?.data?.message || "Error al cargar contratos");
+            const data = await contractService.getAll();
+            setContracts(data);
+            applyFilters(data, searchTerm, filters);
+        } catch (err) {
+            notification.error("Error", "No se pudieron cargar los contratos");
         } finally {
             setLoading(false);
         }
     };
 
-    const getEmployeeName = (employeeId: string) => {
-        const emp = employees.get(employeeId);
-        return emp ? `${emp.name} ${emp.surname}` : "Empleado no encontrado";
+    // Aplicar filtros y búsqueda
+    const applyFilters = useCallback(
+        (data: Contract[], search: string, filtersData: typeof filters) => {
+            let result = data;
+
+            // Búsqueda por texto
+            if (search.trim()) {
+                const searchLower = search.toLowerCase();
+                result = result.filter(
+                    (contract) =>
+                        contract.position.toLowerCase().includes(searchLower) ||
+                        contract.category.toLowerCase().includes(searchLower) ||
+                        contract.department.toLowerCase().includes(searchLower)
+                );
+            }
+
+            // Filtro por estado
+            if (filtersData.status) {
+                result = result.filter((contract) => contract.status === filtersData.status);
+            }
+
+            // Filtro por tipo de contrato
+            if (filtersData.contractType) {
+                result = result.filter(
+                    (contract) => contract.contractType === filtersData.contractType
+                );
+            }
+
+            // Filtro por departamento
+            if (filtersData.department) {
+                result = result.filter(
+                    (contract) => contract.department === filtersData.department
+                );
+            }
+
+            // Ordenar
+            result = result.sort((a, b) => {
+                let compareA: any = a[filtersData.sortBy as keyof Contract];
+                let compareB: any = b[filtersData.sortBy as keyof Contract];
+
+                if (typeof compareA === "string") {
+                    compareA = compareA.toLowerCase();
+                    compareB = (compareB as string).toLowerCase();
+                }
+
+                if (filtersData.sortOrder === "asc") {
+                    return compareA > compareB ? 1 : -1;
+                } else {
+                    return compareA < compareB ? 1 : -1;
+                }
+            });
+
+            setFilteredContracts(result);
+        },
+        []
+    );
+
+    // Manejar cambio en búsqueda
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+        applyFilters(contracts, value, filters);
+    };
+
+    // Manejar cambio en filtros
+    const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        const newFilters = { ...filters, [name]: value };
+        setFilters(newFilters);
+        applyFilters(contracts, searchTerm, newFilters);
+    };
+
+    // Limpiar filtros
+    const resetFilters = () => {
+        setSearchTerm("");
+        setFilters({
+            status: "",
+            contractType: "",
+            department: "",
+            sortBy: "startDate",
+            sortOrder: "desc",
+        });
+        applyFilters(contracts, "", {
+            status: "",
+            contractType: "",
+            department: "",
+            sortBy: "startDate",
+            sortOrder: "desc",
+        });
+    };
+
+    // Obtener listas únicas
+    const departments = Array.from(new Set(contracts.map((c) => c.department))).sort();
+    const contractTypes = Array.from(new Set(contracts.map((c) => c.contractType))).sort();
+
+    // Eliminar contrato
+    const handleDelete = async (id: string) => {
+        if (window.confirm("¿Estás seguro de que quieres eliminar este contrato?")) {
+            try {
+                await contractService.delete(id);
+                notification.success("¡Éxito!", "Contrato eliminado correctamente");
+                fetchContracts();
+            } catch (err) {
+                notification.error("Error", "No se pudo eliminar el contrato");
+            }
+        }
     };
 
     const getStatusColor = (status: string) => {
@@ -81,77 +183,148 @@ export const ContractsPage = () => {
         }
     };
 
-    const handleDelete = async (id: string) => {
-        if (window.confirm("¿Estás seguro de que deseas eliminar este contrato?")) {
-            try {
-                await contractService.delete(id);
-                setContracts(contracts.filter((c) => (c as any).id !== id));
-            } catch (err: any) {
-                setError(err.response?.data?.message || "Error al eliminar contrato");
-            }
-        }
-    };
-
-    const filteredContracts = contracts.filter((contract) => {
-        const employeeName = getEmployeeName((contract as any).employeeId).toLowerCase();
-        const term = searchTerm.toLowerCase();
-        return (
-            employeeName.includes(term) ||
-            contract.position.toLowerCase().includes(term) ||
-            contract.department.toLowerCase().includes(term)
-        );
-    });
-
     return (
         <Layout>
             <div className="container-fluid">
                 {/* Header */}
-                <div className="d-flex justify-content-between align-items-center mb-4">
+                <div className="mb-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 className="fw-bold mb-2">Contratos</h1>
-                        <p className="text-muted">Gestiona todos los contratos de tu empresa</p>
+                        <h1 className="fw-bold mb-2">📋 Contratos</h1>
+                        <p className="text-muted">
+                            Total: {filteredContracts.length} de {contracts.length} contratos
+                        </p>
                     </div>
-                    <div className="d-flex gap-2">
-                        <button
-                            onClick={() => exportService.exportContractsToPDF(filteredContracts, employees)}
-                            className="btn btn-success"
-                            title="Descargar PDF"
-                        >
-                            📥 Exportar PDF
-                        </button>
-                        <button
-                            onClick={() => navigate("/contracts/new")}
-                            className="btn btn-primary"
-                        >
-                            ➕ Nuevo Contrato
-                        </button>
-                    </div>
+                    <button
+                        onClick={() => navigate("/contracts/new")}
+                        className="btn btn-primary"
+                    >
+                        ➕ Nuevo Contrato
+                    </button>
                 </div>
 
-                {/* Mensajes */}
-                {error && (
-                    <div className="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error:</strong> {error}
-                        <button
-                            type="button"
-                            className="btn-close"
-                            onClick={() => setError(null)}
-                        ></button>
-                    </div>
-                )}
-
-                {/* Búsqueda */}
+                {/* Búsqueda rápida */}
                 <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="🔍 Buscar por empleado, puesto o departamento..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                        <div className="input-group">
+                            <span className="input-group-text bg-light border-0">
+                                🔍
+                            </span>
+                            <input
+                                type="text"
+                                className="form-control form-control-lg border-0"
+                                placeholder="Buscar por puesto, categoría o departamento..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                            <button
+                                className="btn btn-outline-secondary"
+                                onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+                            >
+                                ⚙️ Filtros {showAdvancedFilters ? "▼" : "▶"}
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {/* Filtros avanzados */}
+                {showAdvancedFilters && (
+                    <div className="card border-0 shadow-sm mb-4">
+                        <div className="card-body">
+                            <h6 className="fw-bold mb-3">Filtros Avanzados</h6>
+                            <div className="row g-3">
+                                <div className="col-md-3">
+                                    <label className="form-label small fw-semibold">Estado</label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        name="status"
+                                        value={filters.status}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">Todos los estados</option>
+                                        <option value="PENDIENTE">Pendiente</option>
+                                        <option value="APROBADO">Aprobado</option>
+                                        <option value="ACTIVO">Activo</option>
+                                        <option value="RECHAZADO">Rechazado</option>
+                                        <option value="FINALIZADO">Finalizado</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <label className="form-label small fw-semibold">
+                                        Tipo de Contrato
+                                    </label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        name="contractType"
+                                        value={filters.contractType}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">Todos los tipos</option>
+                                        {contractTypes.map((type) => (
+                                            <option key={type} value={type}>
+                                                {type}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <label className="form-label small fw-semibold">
+                                        Departamento
+                                    </label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        name="department"
+                                        value={filters.department}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="">Todos los departamentos</option>
+                                        {departments.map((dept) => (
+                                            <option key={dept} value={dept}>
+                                                {dept}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                <div className="col-md-3">
+                                    <label className="form-label small fw-semibold">
+                                        Ordenar por
+                                    </label>
+                                    <select
+                                        className="form-select form-select-sm"
+                                        name="sortBy"
+                                        value={filters.sortBy}
+                                        onChange={handleFilterChange}
+                                    >
+                                        <option value="startDate">Fecha inicio</option>
+                                        <option value="position">Puesto</option>
+                                        <option value="salaryAmount">Salario</option>
+                                    </select>
+                                </div>
+
+                                <div className="col-md-12 d-flex gap-2">
+                                    <select
+                                        className="form-select form-select-sm"
+                                        name="sortOrder"
+                                        value={filters.sortOrder}
+                                        onChange={handleFilterChange}
+                                        style={{ maxWidth: "150px" }}
+                                    >
+                                        <option value="asc">Ascendente ↑</option>
+                                        <option value="desc">Descendente ↓</option>
+                                    </select>
+                                    <button
+                                        onClick={resetFilters}
+                                        className="btn btn-outline-secondary btn-sm flex-grow-1"
+                                    >
+                                        Limpiar todos los filtros
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Tabla */}
                 <div className="card border-0 shadow-sm">
@@ -160,93 +333,84 @@ export const ContractsPage = () => {
                             <div className="spinner-border text-primary" role="status">
                                 <span className="visually-hidden">Cargando...</span>
                             </div>
-                            <p className="text-muted mt-3">Cargando contratos...</p>
                         </div>
                     ) : filteredContracts.length === 0 ? (
                         <div className="card-body text-center py-5">
-                            <p className="text-muted mb-0">
-                                {searchTerm
-                                    ? "No se encontraron contratos con esos criterios"
-                                    : "No hay contratos registrados"}
-                            </p>
+                            <p className="text-muted mb-0">No se encontraron contratos</p>
                         </div>
                     ) : (
                         <div className="table-responsive">
-                            <table className="table table-hover mb-0">
+                            <table className="table table-hover mb-0 small">
                                 <thead className="table-light">
                                     <tr>
-                                        <th style={{ width: "18%" }}>Empleado</th>
-                                        <th style={{ width: "12%" }}>Departamento</th>
-                                        <th style={{ width: "12%" }}>Puesto</th>
-                                        <th style={{ width: "10%" }}>Tipo</th>
-                                        <th style={{ width: "10%" }}>Estado</th>
-                                        <th style={{ width: "10%" }}>Inicio</th>
-                                        <th style={{ width: "10%" }}>Fin</th>
-                                        <th style={{ width: "12%" }}>Acciones</th>
+                                        <th>Puesto</th>
+                                        <th>Tipo</th>
+                                        <th>Categoría</th>
+                                        <th>Departamento</th>
+                                        <th>Salario</th>
+                                        <th>Fecha Inicio</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {filteredContracts.map((contract) => (
-                                        <tr key={(contract as any).id}>
-                                            <td className="fw-semibold">
-                                                {getEmployeeName((contract as any).employeeId)}
-                                            </td>
+                                        <tr key={contract.id}>
+                                            <td className="fw-semibold">{contract.position}</td>
+                                            <td>{contract.contractType}</td>
+                                            <td>{contract.category}</td>
                                             <td>{contract.department}</td>
-                                            <td>{contract.position}</td>
                                             <td>
-                                                <span className="badge bg-light text-dark">
-                                                    {contract.contractType}
-                                                </span>
+                                                <code>{contract.salaryAmount}€</code>
                                             </td>
                                             <td>
-                                                <span className={`badge bg-${getStatusColor(contract.status)}`}>
+                                                {new Date(contract.startDate).toLocaleDateString(
+                                                    "es-ES"
+                                                )}
+                                            </td>
+                                            <td>
+                                                <span
+                                                    className={`badge bg-${getStatusColor(
+                                                        contract.status
+                                                    )}`}
+                                                >
                                                     {getStatusText(contract.status)}
                                                 </span>
                                             </td>
                                             <td>
-                                                {new Date(contract.startDate).toLocaleDateString("es-ES")}
-                                            </td>
-                                            <td>
-                                                {contract.endDate
-                                                    ? new Date(contract.endDate).toLocaleDateString("es-ES")
-                                                    : "-"}
-                                            </td>
-                                            <td>
-                                                <div className="btn-group btn-group-sm" role="group">
-                                                    <button
-                                                        onClick={() => navigate(`/contracts/${(contract as any).id}`)}
-                                                        className="btn btn-outline-primary"
-                                                        title="Ver detalles"
-                                                    >
-                                                        👁️
-                                                    </button>
-                                                    <button
-                                                        onClick={() => navigate(`/contracts/${(contract as any).id}/edit`)}
-                                                        className="btn btn-outline-warning"
-                                                        title="Editar"
-                                                    >
-                                                        ✏️
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete((contract as any).id)}
-                                                        className="btn btn-outline-danger"
-                                                        title="Eliminar"
-                                                    >
-                                                        🗑️
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/contracts/${contract.id}`
+                                                        )
+                                                    }
+                                                    className="btn btn-sm btn-info me-2"
+                                                >
+                                                    👁️ Ver
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/contracts/${contract.id}/edit`
+                                                        )
+                                                    }
+                                                    className="btn btn-sm btn-warning me-2"
+                                                >
+                                                    ✏️ Editar
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleDelete(contract.id)
+                                                    }
+                                                    className="btn btn-sm btn-danger"
+                                                >
+                                                    🗑️ Eliminar
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
-                        </div>
-                    )}
-
-                    {/* Footer con estadísticas */}
-                    {!loading && filteredContracts.length > 0 && (
-                        <div className="card-footer bg-light text-muted small">
-                            Mostrando {filteredContracts.length} de {contracts.length} contratos
                         </div>
                     )}
                 </div>

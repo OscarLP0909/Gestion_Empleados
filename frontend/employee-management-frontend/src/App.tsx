@@ -18,6 +18,7 @@ import { NotificationProvider } from "./context/NotificationContext";
 import { ToastContainer } from "./components/Notifications/ToastContainer";
 import { AuditPage } from "./components/Audit/AuditPage";
 
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { isAuthenticated } = useAuthStore();
     return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;

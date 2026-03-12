@@ -106,7 +106,7 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                 </>
             )}
 
-            {/* SECCIÓN: Administración (Solo HR_MANAGER y ADMIN) */}
+            {/* SECCIÓN: Administración (ADMIN y HR_MANAGER) */}
             {isHROrAdmin && (
                 <>
                     <SectionTitle label="Administración" />

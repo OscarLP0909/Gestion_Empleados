@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ensureAuthenticated } from "../middlewares/auth/jwt.js";
-import { isAdmin } from "../middlewares/authorization.js";
+import { authorizeRole } from "../middlewares/authorization.js";
 import { validateObjectId } from "../middlewares/validation.js";
 import {
     getUsers,
@@ -11,29 +11,37 @@ import {
 
 const router = Router();
 
-// Todas estas rutas requieren ser ADMIN
-router.use(ensureAuthenticated, isAdmin);
+// GET - Obtener todos los usuarios (solo ADMIN)
+router.get(
+    "/",
+    ensureAuthenticated,
+    authorizeRole(["ADMIN"]),
+    getUsers
+);
 
-// GET - Obtener todos los usuarios
-router.get("/", getUsers);
-
-// PATCH - Cambiar rol de un usuario
+// PATCH - Cambiar rol de un usuario (solo ADMIN)
 router.patch(
     "/:id/role",
+    ensureAuthenticated,
+    authorizeRole(["ADMIN"]),
     validateObjectId("id"),
     updateUserRole
 );
 
-// PATCH - Desactivar usuario
+// PATCH - Desactivar usuario (solo ADMIN)
 router.patch(
     "/:id/deactivate",
+    ensureAuthenticated,
+    authorizeRole(["ADMIN"]),
     validateObjectId("id"),
     deactivateUser
 );
 
-// PATCH - Activar usuario
+// PATCH - Activar usuario (solo ADMIN)
 router.patch(
     "/:id/activate",
+    ensureAuthenticated,
+    authorizeRole(["ADMIN"]),
     validateObjectId("id"),
     activateUser
 );
