@@ -21,4 +21,14 @@ export const userService = {
         const response = await apiClient.patch(`/user/${id}/activate`);
         return response.data.user;
     },
+
+    createUser: async (data: {
+        name: string;
+        email: string;
+        password: string;
+        role: string
+    }): Promise<User> => {
+        const response = await apiClient.post("/auth/register", data);
+        return response.data.user;
+    },
 };

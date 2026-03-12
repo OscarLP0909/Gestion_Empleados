@@ -3,6 +3,63 @@ import { userService } from "../../services/userService";
 import { Layout } from "../Layout/Layout";
 import type { User } from "../../types/user";
 
+const InputField = ({
+    label,
+    name,
+    type = "text",
+    required = false,
+    placeholder = "",
+    value,
+    onChange,
+    error,
+    disabled,
+}: {
+    label: string;
+    name: string;
+    type?: string;
+    required?: boolean;
+    placeholder?: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    error?: string;
+    disabled?: boolean;
+}) => (
+    <div className="mb-3">
+        <label htmlFor={name} className="form-label fw-semibold">
+            {label}
+            {required && <span className="text-danger ms-1">*</span>}
+        </label>
+        {type === "select" ? (
+            <select
+                className={`form-select ${error ? "is-invalid" : ""}`}
+                id={name}
+                name={name}
+                value={value}
+                onChange={onChange}
+                disabled={disabled}
+            >
+                <option value="">Selecciona {label.toLowerCase()}</option>
+                <option value="ADMIN">Administrador</option>
+                <option value="HR_MANAGER">Gerente de RRHH</option>
+                <option value="MANAGER">Gerente</option>
+                <option value="EMPLOYEE">Empleado</option>
+            </select>
+        ) : (
+            <input
+                type={type}
+                className={`form-control ${error ? "is-invalid" : ""}`}
+                id={name}
+                name={name}
+                value={value}
+                onChange={onChange}
+                placeholder={placeholder}
+                disabled={disabled}
+            />
+        )}
+        {error && <div className="invalid-feedback d-block">{error}</div>}
+    </div>
+);
+
 export const UsersPage = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(false);
@@ -10,6 +67,18 @@ export const UsersPage = () => {
     const [success, setSuccess] = useState<string | null>(null);
     const [editingId, setEditingId] = useState<string | null>(null);
     const [selectedRole, setSelectedRole] = useState<string>("");
+    const [showCreateModal, setShowCreateModal] = useState(false);
+    const [creating, setCreating] = useState(false);
+    const [validationErrors, setValidationErrors] = useState<{
+        [key: string]: string;
+    }>({});
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        role: "EMPLOYEE",
+    });
 
     useEffect(() => {
         fetchUsers();
@@ -25,6 +94,69 @@ export const UsersPage = () => {
             setError(err.response?.data?.message || "Error al cargar usuarios");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+        if (validationErrors[name]) {
+            setValidationErrors((prev) => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
+        }
+    };
+
+    const validateForm = () => {
+        const errors: { [key: string]: string } = {};
+
+        if (!formData.name?.trim()) errors.name = "El nombre es requerido";
+        if (!formData.email?.trim()) errors.email = "El email es requerido";
+        if (formData.email && !formData.email.includes("@")) errors.email = "Email inválido";
+        if (!formData.password) errors.password = "La contraseña es requerida";
+        if (formData.password && formData.password.length < 6)
+            errors.password = "La contraseña debe tener al menos 6 caracteres";
+        if (formData.password !== formData.confirmPassword)
+            errors.confirmPassword = "Las contraseñas no coinciden";
+        if (!formData.role) errors.role = "Selecciona un rol";
+
+        setValidationErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+
+    const handleCreateUser = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!validateForm()) return;
+
+        setCreating(true);
+        setError(null);
+        try {
+            // Llamar al endpoint de registro (asumiendo que existe)
+            await userService.createUser({
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+            });
+
+            setSuccess("✅ Usuario creado correctamente");
+            setFormData({
+                name: "",
+                email: "",
+                password: "",
+                confirmPassword: "",
+                role: "EMPLOYEE",
+            });
+            setShowCreateModal(false);
+            fetchUsers();
+            setTimeout(() => setSuccess(null), 3000);
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Error al crear usuario");
+        } finally {
+            setCreating(false);
         }
     };
 
@@ -105,11 +237,19 @@ export const UsersPage = () => {
         <Layout>
             <div className="container-fluid">
                 {/* Header */}
-                <div className="mb-4">
-                    <h1 className="fw-bold mb-2">Gestión de Usuarios</h1>
-                    <p className="text-muted">
-                        Administra usuarios, roles y permisos del sistema
-                    </p>
+                <div className="d-flex justify-content-between align-items-center mb-4">
+                    <div>
+                        <h1 className="fw-bold mb-2">Gestión de Usuarios</h1>
+                        <p className="text-muted">
+                            Administra usuarios, roles y permisos del sistema
+                        </p>
+                    </div>
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="btn btn-primary"
+                    >
+                        ➕ Crear Usuario
+                    </button>
                 </div>
 
                 {/* Mensajes */}
@@ -264,6 +404,148 @@ export const UsersPage = () => {
                     )}
                 </div>
             </div>
+
+            {/* Modal de crear usuario */}
+            {showCreateModal && (
+                <div
+                    className="modal fade show d-block"
+                    style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+                    tabIndex={-1}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content">
+                            <div className="modal-header">
+                                <h5 className="modal-title fw-bold">Crear Nuevo Usuario</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => {
+                                        setShowCreateModal(false);
+                                        setFormData({
+                                            name: "",
+                                            email: "",
+                                            password: "",
+                                            confirmPassword: "",
+                                            role: "EMPLOYEE",
+                                        });
+                                        setValidationErrors({});
+                                    }}
+                                ></button>
+                            </div>
+                            <form onSubmit={handleCreateUser}>
+                                <div className="modal-body">
+                                    <InputField
+                                        label="Nombre"
+                                        name="name"
+                                        required={true}
+                                        placeholder="Juan Pérez"
+                                        value={formData.name}
+                                        onChange={handleInputChange}
+                                        error={validationErrors.name}
+                                        disabled={creating}
+                                    />
+
+                                    <InputField
+                                        label="Email"
+                                        name="email"
+                                        type="email"
+                                        required={true}
+                                        placeholder="usuario@ejemplo.com"
+                                        value={formData.email}
+                                        onChange={handleInputChange}
+                                        error={validationErrors.email}
+                                        disabled={creating}
+                                    />
+
+                                    <InputField
+                                        label="Contraseña"
+                                        name="password"
+                                        type="password"
+                                        required={true}
+                                        value={formData.password}
+                                        onChange={handleInputChange}
+                                        error={validationErrors.password}
+                                        disabled={creating}
+                                    />
+
+                                    <InputField
+                                        label="Confirmar Contraseña"
+                                        name="confirmPassword"
+                                        type="password"
+                                        required={true}
+                                        value={formData.confirmPassword}
+                                        onChange={handleInputChange}
+                                        error={validationErrors.confirmPassword}
+                                        disabled={creating}
+                                    />
+
+                                    <div className="mb-3">
+                                        <label htmlFor="role" className="form-label fw-semibold">
+                                            Rol <span className="text-danger ms-1">*</span>
+                                        </label>
+                                        <select
+                                            className={`form-select ${validationErrors.role ? "is-invalid" : ""}`}
+                                            id="role"
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleInputChange}
+                                            disabled={creating}
+                                        >
+                                            <option value="EMPLOYEE">Empleado</option>
+                                            <option value="MANAGER">Gerente</option>
+                                            <option value="HR_MANAGER">Gerente de RRHH</option>
+                                            <option value="ADMIN">Administrador</option>
+                                        </select>
+                                        {validationErrors.role && (
+                                            <div className="invalid-feedback d-block">
+                                                {validationErrors.role}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                <div className="modal-footer">
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() => {
+                                            setShowCreateModal(false);
+                                            setFormData({
+                                                name: "",
+                                                email: "",
+                                                password: "",
+                                                confirmPassword: "",
+                                                role: "EMPLOYEE",
+                                            });
+                                            setValidationErrors({});
+                                        }}
+                                        disabled={creating}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
+                                        disabled={creating}
+                                    >
+                                        {creating ? (
+                                            <>
+                                                <span
+                                                    className="spinner-border spinner-border-sm me-2"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                ></span>
+                                                Creando...
+                                            </>
+                                        ) : (
+                                            "✅ Crear Usuario"
+                                        )}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 };
