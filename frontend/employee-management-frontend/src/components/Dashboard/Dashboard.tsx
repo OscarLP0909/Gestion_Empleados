@@ -294,40 +294,64 @@ export const Dashboard = () => {
                 </div>
 
                 {/* Alertas importantes */}
-                {(stats.expiringContracts > 0 || stats.startingSoonContracts > 0) && (
+                <div className="row mb-4">
+                    {stats.pendingContracts > 0 && (
+                        <div className="col-md-4 mb-3">
+                            <div className="alert alert-danger border-start border-4 border-danger">
+                                <h6 className="fw-bold mb-2">⚠️ Contratos Pendientes de Aprobación</h6>
+                                <p className="mb-0 small">
+                                    <strong className="fs-5">{stats.pendingContracts}</strong> contrato(s) aguardando aprobación.
+                                </p>
+                                <button
+                                    className="btn btn-sm btn-danger mt-2"
+                                    onClick={() => navigate("/contract-approvals")}
+                                >
+                                    Revisar ahora
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {stats.expiringContracts > 0 && (
+                        <div className="col-md-4 mb-3">
+                            <div className="alert alert-warning border-start border-4 border-warning">
+                                <h6 className="fw-bold mb-2">⏰ Contratos próximos a finalizar</h6>
+                                <p className="mb-0 small">
+                                    {stats.expiringContracts} contrato(s) se vencerá(n) en los próximos 30 días.
+                                </p>
+                                <button
+                                    className="btn btn-sm btn-warning mt-2"
+                                    onClick={() => navigate("/contracts")}
+                                >
+                                    Ver contratos
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                    {stats.startingSoonContracts > 0 && (
+                        <div className="col-md-4 mb-3">
+                            <div className="alert alert-info border-start border-4 border-info">
+                                <h6 className="fw-bold mb-2">🚀 Contratos próximos a empezar</h6>
+                                <p className="mb-0 small">
+                                    {stats.startingSoonContracts} contrato(s) empezará(n) en los próximos 30 días.
+                                </p>
+                                <button
+                                    className="btn btn-sm btn-info mt-2"
+                                    onClick={() => navigate("/contracts")}
+                                >
+                                    Ver contratos
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {(stats.pendingContracts === 0 && stats.expiringContracts === 0 && stats.startingSoonContracts === 0) && (
                     <div className="row mb-4">
-                        {stats.expiringContracts > 0 && (
-                            <div className="col-md-6 mb-3">
-                                <div className="alert alert-warning border-start border-4 border-warning">
-                                    <h6 className="fw-bold mb-2">⏰ Contratos próximos a finalizar</h6>
-                                    <p className="mb-0 small">
-                                        {stats.expiringContracts} contrato(s) se vencerá(n) en los próximos 30 días.
-                                    </p>
-                                    <button
-                                        className="btn btn-sm btn-warning mt-2"
-                                        onClick={() => navigate("/contracts")}
-                                    >
-                                        Ver contratos
-                                    </button>
-                                </div>
+                        <div className="col-12">
+                            <div className="alert alert-success border-start border-4 border-success">
+                                <h6 className="fw-bold mb-2">✅ Todo bajo control</h6>
+                                <p className="mb-0 small">No hay contratos pendientes de aprobación ni próximos a vencer.</p>
                             </div>
-                        )}
-                        {stats.startingSoonContracts > 0 && (
-                            <div className="col-md-6 mb-3">
-                                <div className="alert alert-info border-start border-4 border-info">
-                                    <h6 className="fw-bold mb-2">🚀 Contratos próximos a empezar</h6>
-                                    <p className="mb-0 small">
-                                        {stats.startingSoonContracts} contrato(s) empezará(n) en los próximos 30 días.
-                                    </p>
-                                    <button
-                                        className="btn btn-sm btn-info mt-2"
-                                        onClick={() => navigate("/contracts")}
-                                    >
-                                        Ver contratos
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 )}
 
