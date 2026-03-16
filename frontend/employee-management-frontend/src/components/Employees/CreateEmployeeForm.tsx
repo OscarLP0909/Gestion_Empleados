@@ -27,7 +27,7 @@ const InputField = ({
     disabled?: boolean;
 }) => (
     <div className="mb-3">
-        <label htmlFor={name} className="form-label fw-semibold">
+        <label htmlFor={name} className="form-label fw-semibold text-white mb-2">
             {label}
             {required && <span className="text-danger ms-1">*</span>}
         </label>
@@ -40,9 +40,16 @@ const InputField = ({
             onChange={onChange}
             placeholder={placeholder}
             disabled={disabled}
+            style={{
+                backgroundColor: "rgba(255,255,255,0.95)",
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "16px",
+            }}
         />
         {error && (
-            <div className="invalid-feedback d-block">
+            <div className="invalid-feedback d-block" style={{ color: "#ffcccc" }}>
                 {error}
             </div>
         )}
@@ -152,23 +159,43 @@ export const CreateEmployeeForm = () => {
             <div className="container-fluid">
                 {/* Header */}
                 <div className="mb-4">
-                    <button
-                        onClick={() => navigate("/employees")}
-                        className="btn btn-outline-secondary btn-sm mb-3"
-                    >
-                        ← Volver
-                    </button>
-                    <h1 className="fw-bold mb-2">Crear Nuevo Empleado</h1>
-                    <p className="text-muted">
-                        Completa el formulario para agregar un nuevo empleado al sistema
-                    </p>
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                        <button
+                            onClick={() => navigate("/employees")}
+                            className="btn btn-outline-secondary btn-sm"
+                        >
+                            ← Atrás
+                        </button>
+                        <h1 className="fw-bold mb-0">👤 Crear Nuevo Empleado</h1>
+                    </div>
+                    <p className="text-muted">Registra un nuevo empleado en el sistema</p>
                 </div>
 
                 {/* Formulario */}
-                <div className="d-flex justify-content-center">
-                    <div style={{ width: "100%", maxWidth: "700px" }}>
-                        <div className="card border-0 shadow-sm">
-                            <div className="card-body p-5">
+                <div className="row justify-content-center">
+                    <div className="col-lg-7 col-xl-6">
+                        <div
+                            className="card border-0 shadow-lg"
+                            style={{
+                                background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                borderRadius: "15px",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    background: "rgba(0,0,0,0.1)",
+                                    padding: "20px",
+                                    borderBottom: "1px solid rgba(255,255,255,0.1)",
+                                }}
+                            >
+                                <h5 className="text-white fw-bold mb-0">
+                                    📋 Datos del Empleado
+                                </h5>
+                                <small className="text-white-50">Completa todos los campos requeridos</small>
+                            </div>
+
+                            <div className="card-body p-4">
                                 <form onSubmit={handleSubmit}>
                                     {/* Nombre y Apellido */}
                                     <div className="row g-3">
@@ -281,11 +308,17 @@ export const CreateEmployeeForm = () => {
                                     </div>
 
                                     {/* Botones */}
-                                    <div className="d-flex gap-2 pt-4 mt-2">
+                                    <div className="d-grid gap-2 pt-4">
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="btn btn-primary flex-grow-1"
+                                            className="btn btn-light btn-lg fw-bold"
+                                            style={{
+                                                borderRadius: "10px",
+                                                padding: "12px 24px",
+                                                fontSize: "16px",
+                                                boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                                            }}
                                         >
                                             {loading ? (
                                                 <>
@@ -294,7 +327,7 @@ export const CreateEmployeeForm = () => {
                                                         role="status"
                                                         aria-hidden="true"
                                                     ></span>
-                                                    Creando...
+                                                    Creando empleado...
                                                 </>
                                             ) : (
                                                 "✅ Crear Empleado"
@@ -304,12 +337,29 @@ export const CreateEmployeeForm = () => {
                                             type="button"
                                             onClick={() => navigate("/employees")}
                                             disabled={loading}
-                                            className="btn btn-outline-secondary flex-grow-1"
+                                            className="btn btn-outline-light btn-lg fw-bold"
+                                            style={{
+                                                borderRadius: "10px",
+                                                padding: "12px 24px",
+                                                fontSize: "16px",
+                                            }}
                                         >
-                                            Cancelar
+                                            ❌ Cancelar
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+
+                            <div
+                                style={{
+                                    background: "rgba(0,0,0,0.1)",
+                                    padding: "15px 20px",
+                                    borderTop: "1px solid rgba(255,255,255,0.1)",
+                                }}
+                            >
+                                <small className="text-white-50">
+                                    ℹ️ Los campos marcados con * son obligatorios
+                                </small>
                             </div>
                         </div>
                     </div>

@@ -110,7 +110,12 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
             {isHROrAdmin && (
                 <>
                     <SectionTitle label="Administración" />
-                    {isAdmin && <MenuItem icon="👥" label="Usuarios" path="/users" />}
+                    {isAdmin && (
+                        <>
+                            <MenuItem icon="👥" label="Usuarios" path="/users" />
+                            <MenuItem icon="🆕" label="Crear Usuario" path="/users/new" />
+                        </>
+                    )}
                     <MenuItem icon="📋" label="Auditoría" path="/audit" />
                     {isAdmin && <MenuItem icon="⚙️" label="Configuración" path="/settings" />}
                 </>

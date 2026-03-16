@@ -30,7 +30,7 @@ const InputField = ({
     disabled?: boolean;
 }) => (
     <div className="mb-3">
-        <label htmlFor={name} className="form-label fw-semibold">
+        <label htmlFor={name} className="form-label fw-semibold text-white mb-2">
             {label}
             {required && <span className="text-danger ms-1">*</span>}
         </label>
@@ -43,8 +43,15 @@ const InputField = ({
             onChange={onChange}
             placeholder={placeholder}
             disabled={disabled}
+            style={{
+                backgroundColor: "rgba(255,255,255,0.95)",
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "16px",
+            }}
         />
-        {error && <div className="invalid-feedback d-block">{error}</div>}
+        {error && <div className="invalid-feedback d-block" style={{ color: "#ffcccc" }}>{error}</div>}
     </div>
 );
 
@@ -68,7 +75,7 @@ const SelectField = ({
     options: { value: string; label: string }[];
 }) => (
     <div className="mb-3">
-        <label htmlFor={name} className="form-label fw-semibold">
+        <label htmlFor={name} className="form-label fw-semibold text-white mb-2">
             {label}
             {required && <span className="text-danger ms-1">*</span>}
         </label>
@@ -79,6 +86,13 @@ const SelectField = ({
             value={value}
             onChange={onChange}
             disabled={disabled}
+            style={{
+                backgroundColor: "rgba(255,255,255,0.95)",
+                border: "2px solid rgba(255,255,255,0.3)",
+                borderRadius: "10px",
+                padding: "12px 16px",
+                fontSize: "16px",
+            }}
         >
             <option value="">Selecciona {label.toLowerCase()}</option>
             {options.map((opt) => (
@@ -87,7 +101,7 @@ const SelectField = ({
                 </option>
             ))}
         </select>
-        {error && <div className="invalid-feedback d-block">{error}</div>}
+        {error && <div className="invalid-feedback d-block" style={{ color: "#ffcccc" }}>{error}</div>}
     </div>
 );
 
@@ -202,29 +216,51 @@ export const CreateContractForm = () => {
     return (
         <Layout>
             <div className="container-fluid">
+                {/* Header */}
                 <div className="mb-4">
-                    <button
-                        onClick={() => navigate("/contracts")}
-                        className="btn btn-outline-secondary btn-sm mb-3"
-                    >
-                        ← Volver
-                    </button>
-                    <h1 className="fw-bold mb-2">Crear Nuevo Contrato</h1>
-                    <p className="text-muted">
-                        Completa el formulario para agregar un nuevo contrato al sistema
-                    </p>
+                    <div className="d-flex align-items-center gap-3 mb-3">
+                        <button
+                            onClick={() => navigate("/contracts")}
+                            className="btn btn-outline-secondary btn-sm"
+                        >
+                            ← Atrás
+                        </button>
+                        <h1 className="fw-bold mb-0">📋 Crear Nuevo Contrato</h1>
+                    </div>
+                    <p className="text-muted">Registra un nuevo contrato de trabajo</p>
                 </div>
 
-                <div className="d-flex justify-content-center">
-                    <div style={{ width: "100%", maxWidth: "700px" }}>
-                        <div className="card border-0 shadow-sm">
-                            <div className="card-body p-5">
+                {/* Formulario */}
+                <div className="row justify-content-center">
+                    <div className="col-lg-7 col-xl-6">
+                        <div
+                            className="card border-0 shadow-lg"
+                            style={{
+                                background: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+                                borderRadius: "15px",
+                                overflow: "hidden",
+                            }}
+                        >
+                            <div
+                                style={{
+                                    background: "rgba(0,0,0,0.1)",
+                                    padding: "20px",
+                                    borderBottom: "1px solid rgba(255,255,255,0.1)",
+                                }}
+                            >
+                                <h5 className="text-white fw-bold mb-0">
+                                    📝 Datos del Contrato
+                                </h5>
+                                <small className="text-white-50">Completa todos los campos requeridos</small>
+                            </div>
+
+                            <div className="card-body p-4">
                                 <form onSubmit={handleSubmit}>
                                     {/* Empleado */}
                                     <div className="row g-3">
                                         <div className="col-12">
                                             <SelectField
-                                                label="Empleado"
+                                                label="👤 Empleado"
                                                 name="employeeId"
                                                 required={true}
                                                 value={formData.employeeId}
@@ -243,7 +279,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-md-4">
                                             <InputField
-                                                label="Departamento"
+                                                label="🏢 Departamento"
                                                 name="department"
                                                 placeholder="IT"
                                                 required={true}
@@ -255,7 +291,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <InputField
-                                                label="Categoría"
+                                                label="🏷️ Categoría"
                                                 name="category"
                                                 placeholder="Senior"
                                                 required={true}
@@ -267,7 +303,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <InputField
-                                                label="Puesto"
+                                                label="💼 Puesto"
                                                 name="position"
                                                 placeholder="Desarrollador"
                                                 required={true}
@@ -283,7 +319,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="Tipo de Contrato"
+                                                label="📄 Tipo"
                                                 name="contractType"
                                                 required={true}
                                                 value={formData.contractType}
@@ -300,7 +336,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="Jornada"
+                                                label="⏰ Jornada"
                                                 name="workdayType"
                                                 required={true}
                                                 value={formData.workdayType}
@@ -315,7 +351,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="Tipo de Salario"
+                                                label="💰 Salario"
                                                 name="salaryType"
                                                 required={true}
                                                 value={formData.salaryType}
@@ -330,11 +366,11 @@ export const CreateContractForm = () => {
                                         </div>
                                     </div>
 
-                                    {/* Salario, Fechas */}
+                                    {/* Monto Salario, Fecha Inicio */}
                                     <div className="row g-3">
                                         <div className="col-md-6">
                                             <InputField
-                                                label="Salario"
+                                                label="💵 Monto Salario (€)"
                                                 name="salaryAmount"
                                                 type="number"
                                                 placeholder="1500"
@@ -347,7 +383,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-6">
                                             <InputField
-                                                label="Inicio del Contrato"
+                                                label="📅 Inicio"
                                                 name="startDate"
                                                 type="date"
                                                 required={true}
@@ -363,7 +399,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-12">
                                             <InputField
-                                                label="Fin del Contrato"
+                                                label="📅 Fin (Opcional)"
                                                 name="endDate"
                                                 type="date"
                                                 required={false}
@@ -375,11 +411,17 @@ export const CreateContractForm = () => {
                                     </div>
 
                                     {/* Botones */}
-                                    <div className="d-flex gap-2 pt-4 mt-2">
+                                    <div className="d-grid gap-2 pt-4">
                                         <button
                                             type="submit"
                                             disabled={loading}
-                                            className="btn btn-primary flex-grow-1"
+                                            className="btn btn-light btn-lg fw-bold"
+                                            style={{
+                                                borderRadius: "10px",
+                                                padding: "12px 24px",
+                                                fontSize: "16px",
+                                                boxShadow: "0 4px 15px rgba(0,0,0,0.2)",
+                                            }}
                                         >
                                             {loading ? (
                                                 <>
@@ -388,7 +430,7 @@ export const CreateContractForm = () => {
                                                         role="status"
                                                         aria-hidden="true"
                                                     ></span>
-                                                    Creando...
+                                                    Creando contrato...
                                                 </>
                                             ) : (
                                                 "✅ Crear Contrato"
@@ -398,12 +440,29 @@ export const CreateContractForm = () => {
                                             type="button"
                                             onClick={() => navigate("/contracts")}
                                             disabled={loading}
-                                            className="btn btn-outline-secondary flex-grow-1"
+                                            className="btn btn-outline-light btn-lg fw-bold"
+                                            style={{
+                                                borderRadius: "10px",
+                                                padding: "12px 24px",
+                                                fontSize: "16px",
+                                            }}
                                         >
-                                            Cancelar
+                                            ❌ Cancelar
                                         </button>
                                     </div>
                                 </form>
+                            </div>
+
+                            <div
+                                style={{
+                                    background: "rgba(0,0,0,0.1)",
+                                    padding: "15px 20px",
+                                    borderTop: "1px solid rgba(255,255,255,0.1)",
+                                }}
+                            >
+                                <small className="text-white-50">
+                                    ℹ️ El contrato será creado con estado PENDIENTE
+                                </small>
                             </div>
                         </div>
                     </div>

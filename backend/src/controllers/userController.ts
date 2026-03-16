@@ -2,6 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { User } from "../db/models/user.js";
 import { createAuditLog } from "../services/auditService.js";
 import { Types } from "mongoose";
+import bcrypt from "bcrypt";
 
 /**
  * GET /api/users
@@ -16,6 +17,53 @@ export const getUsers = async (
     try {
         const users = await User.find().select("-password");
         res.status(200).json(users); 
+    } catch (error) {
+        next(error);
+    }
+};
+
+/**
+ * 
+ * POST /users
+ * Agregar usuarios que tendrán acceso a la APP
+ * Body: { email, password, role }
+ */
+
+export const createNewUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { name, email, password, role } = req.body;
+
+        if (!name || !email || !password || !role) {
+            res.status(400).send("All the fields are required");
+            return;
+        }
+
+        if(typeof(email) !== "string" || email === "") {
+            res.sendStatus(400);
+            return;
+        }
+
+        const user = await User.findOne({email});
+        if(user) {
+            res.status(400).send("User already exists");
+            return;
+        }
+
+
+        const newUser = new User({
+            name,
+            email,
+            password: password, 
+            role: role || "HR_MANAGER",
+            isActive: true
+        });
+
+        await newUser.save();
+
+        res.status(201).json({
+            message: "User created successfully",
+            user: { email: newUser.email, role: newUser.role }
+        });
     } catch (error) {
         next(error);
     }
