@@ -7,6 +7,7 @@ import {
     updateUserRole,
     deactivateUser,
     activateUser,
+    createNewUser,
 } from "../controllers/userController.js";
 
 const router = Router();
@@ -17,6 +18,14 @@ router.get(
     ensureAuthenticated,
     authorizeRole(["ADMIN"]),
     getUsers
+);
+
+// POST - Crear nuevo Usuario (solo ADMIN)
+router.post(
+    "/",
+    ensureAuthenticated,
+    authorizeRole(["ADMIN"]),
+    createNewUser
 );
 
 // PATCH - Cambiar rol de un usuario (solo ADMIN)
