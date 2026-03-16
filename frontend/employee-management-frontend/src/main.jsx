@@ -4,6 +4,7 @@ import App from './App.jsx'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './index.css'
 import "./styles/darkmode.css";
+import "./styles/darkmode-input.css"
 
 const rootElement = document.getElementById('root')
 
