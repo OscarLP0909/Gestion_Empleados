@@ -31,9 +31,9 @@ export const getUsers = async (
 
 export const createNewUser = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { email, password, role } = req.body;
+        const { name, email, password, role } = req.body;
 
-        if (!email || !password || !role) {
+        if (!name || !email || !password || !role) {
             res.status(400).send("All the fields are required");
             return;
         }
@@ -49,11 +49,11 @@ export const createNewUser = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
-        const hashPassword = await bcrypt.hash(password, 10);
 
         const newUser = new User({
+            name,
             email,
-            password: hashPassword,
+            password: password, 
             role: role || "HR_MANAGER",
             isActive: true
         });
@@ -67,7 +67,7 @@ export const createNewUser = async (req: Request, res: Response, next: NextFunct
     } catch (error) {
         next(error);
     }
-}
+};
 
 /**
  * PATCH /api/users/:id/role
