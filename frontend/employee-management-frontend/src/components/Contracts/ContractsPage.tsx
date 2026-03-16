@@ -1,20 +1,22 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { contractService } from "../../services/contractService";
+import { employeeService } from "../../services/employeeService";
 import { useNotification } from "../../hooks/useNotification";
 import { Layout } from "../Layout/Layout";
 import type { Contract } from "../../types/contract";
+import type { Employee } from "../../types/employee";
 
 export const ContractsPage = () => {
     const navigate = useNavigate();
     const notification = useNotification();
 
     const [contracts, setContracts] = useState<Contract[]>([]);
+    const [employees, setEmployees] = useState<Map<string, Employee>>(new Map());
     const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-    // Estados de búsqueda y filtros
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState({
         status: "",
@@ -25,20 +27,52 @@ export const ContractsPage = () => {
     });
 
     useEffect(() => {
-        fetchContracts();
+        fetchData();
     }, []);
 
-    const fetchContracts = async () => {
+    const fetchData = async () => {
         setLoading(true);
         try {
-            const data = await contractService.getAll();
-            setContracts(data);
-            applyFilters(data, searchTerm, filters);
+            const [contractsData, employeesData] = await Promise.all([
+                contractService.getAll(),
+                employeeService.getAll(),
+            ]);
+            
+            setContracts(contractsData);
+
+            const employeeMap = new Map();
+            employeesData.forEach((emp: any) => {
+                const empId = emp._id || emp.id;
+                employeeMap.set(empId, emp);
+                employeeMap.set(empId.toString(), emp);
+            });
+            
+            setEmployees(employeeMap);
+            applyFilters(contractsData, searchTerm, filters);
         } catch (err) {
             notification.error("Error", "No se pudieron cargar los contratos");
         } finally {
             setLoading(false);
         }
+    };
+
+    const getEmployeeName = (employeeId: any) => {
+        if (!employeeId) return "Empleado desconocido";
+        
+        let empId;
+        if (typeof employeeId === "object") {
+            empId = employeeId._id || employeeId.id;
+        } else {
+            empId = employeeId;
+        }
+        
+        const employee = employees.get(empId);
+        
+        if (employee) {
+            return `${employee.name} ${employee.surname || ""}`.trim();
+        }
+        
+        return "Empleado desconocido";
     };
 
     const applyFilters = useCallback(
@@ -47,12 +81,15 @@ export const ContractsPage = () => {
 
             if (search.trim()) {
                 const searchLower = search.toLowerCase();
-                result = result.filter(
-                    (contract) =>
+                result = result.filter((contract: any) => {
+                    const employeeName = getEmployeeName(contract.employeeId);
+                    return (
+                        employeeName.toLowerCase().includes(searchLower) ||
                         contract.position.toLowerCase().includes(searchLower) ||
                         contract.category.toLowerCase().includes(searchLower) ||
                         contract.department.toLowerCase().includes(searchLower)
-                );
+                    );
+                });
             }
 
             if (filtersData.status) {
@@ -89,7 +126,7 @@ export const ContractsPage = () => {
 
             setFilteredContracts(result);
         },
-        []
+        [employees]
     );
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,7 +168,7 @@ export const ContractsPage = () => {
             try {
                 await contractService.delete(id);
                 notification.success("¡Éxito!", "Contrato eliminado correctamente");
-                fetchContracts();
+                fetchData();
             } catch (err) {
                 notification.error("Error", "No se pudo eliminar el contrato");
             }
@@ -175,10 +212,10 @@ export const ContractsPage = () => {
     return (
         <Layout>
             <div className="container-fluid">
-                <div className="mb-4 d-flex justify-content-between align-items-center">
+                <div className="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
                         <h1 className="fw-bold mb-2">📋 Contratos</h1>
-                        <p className="text-muted">
+                        <p className="text-muted mb-0">
                             Total: {filteredContracts.length} de {contracts.length} contratos
                         </p>
                     </div>
@@ -199,7 +236,7 @@ export const ContractsPage = () => {
                             <input
                                 type="text"
                                 className="form-control form-control-lg border-0"
-                                placeholder="Buscar por puesto, categoría o departamento..."
+                                placeholder="Buscar por empleado, puesto, categoría o departamento..."
                                 value={searchTerm}
                                 onChange={handleSearchChange}
                             />
@@ -289,7 +326,7 @@ export const ContractsPage = () => {
                                     </select>
                                 </div>
 
-                                <div className="col-md-12 d-flex gap-2">
+                                <div className="col-md-12 d-flex gap-2 flex-wrap">
                                     <select
                                         className="form-select form-select-sm"
                                         name="sortOrder"
@@ -325,43 +362,55 @@ export const ContractsPage = () => {
                         </div>
                     ) : (
                         <div className="table-responsive">
-                            <table className="table table-hover mb-0 small">
+                            <table className="table table-hover mb-0">
                                 <thead className="table-light">
                                     <tr>
-                                        <th>Puesto</th>
-                                        <th>Tipo</th>
-                                        <th>Categoría</th>
-                                        <th>Departamento</th>
-                                        <th>Salario</th>
-                                        <th>Fecha Inicio</th>
-                                        <th>Fecha Fin</th>
-                                        <th>Estado</th>
-                                        <th>Acciones</th>
+                                        <th className="text-nowrap">Empleado</th>
+                                        <th className="text-nowrap">Puesto</th>
+                                        <th className="text-nowrap d-none d-lg-table-cell">Tipo</th>
+                                        <th className="text-nowrap d-none d-md-table-cell">Categoría</th>
+                                        <th className="text-nowrap d-none d-lg-table-cell">Departamento</th>
+                                        <th className="text-nowrap d-none d-xl-table-cell">Salario</th>
+                                        <th className="text-nowrap d-none d-md-table-cell">Fecha Inicio</th>
+                                        <th className="text-nowrap d-none d-lg-table-cell">Fecha Fin</th>
+                                        <th className="text-nowrap">Estado</th>
+                                        <th className="text-nowrap">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {filteredContracts.map((contract) => (
+                                    {filteredContracts.map((contract: any) => (
                                         <tr key={contract.id}>
-                                            <td className="fw-semibold">{contract.position}</td>
-                                            <td>{contract.contractType}</td>
-                                            <td>{contract.category}</td>
-                                            <td>{contract.department}</td>
-                                            <td>
-                                                <code>{contract.salaryAmount}€</code>
+                                            <td className="fw-semibold text-truncate">
+                                                {getEmployeeName(contract.employeeId)}
                                             </td>
-                                            <td>
+                                            <td className="text-truncate">{contract.position}</td>
+                                            <td className="text-nowrap d-none d-lg-table-cell">
+                                                <span className="badge bg-light text-dark">
+                                                    {contract.contractType}
+                                                </span>
+                                            </td>
+                                            <td className="d-none d-md-table-cell text-truncate">
+                                                {contract.category}
+                                            </td>
+                                            <td className="d-none d-lg-table-cell text-truncate">
+                                                {contract.department}
+                                            </td>
+                                            <td className="d-none d-xl-table-cell">
+                                                <code className="text-nowrap">{contract.salaryAmount}€</code>
+                                            </td>
+                                            <td className="text-nowrap d-none d-md-table-cell">
                                                 {new Date(contract.startDate).toLocaleDateString(
                                                     "es-ES"
                                                 )}
                                             </td>
-                                            <td>
+                                            <td className="text-nowrap d-none d-lg-table-cell">
                                                 {contract.endDate ? (
                                                     new Date(contract.endDate).toLocaleDateString("es-ES")
                                                 ) : (
                                                     <span className="text-muted">-</span>
                                                 )}
                                             </td>
-                                            <td>
+                                            <td className="text-nowrap">
                                                 <span
                                                     className={`badge bg-${getStatusColor(
                                                         contract.status
@@ -370,35 +419,40 @@ export const ContractsPage = () => {
                                                     {getStatusText(contract.status)}
                                                 </span>
                                             </td>
-                                            <td>
-                                                <button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/contracts/${contract.id}`
-                                                        )
-                                                    }
-                                                    className="btn btn-sm btn-info me-2"
-                                                >
-                                                    👁️ Ver
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/contracts/${contract.id}/edit`
-                                                        )
-                                                    }
-                                                    className="btn btn-sm btn-warning me-2"
-                                                >
-                                                    ✏️ Editar
-                                                </button>
-                                                <button
-                                                    onClick={() =>
-                                                        handleDelete(contract.id)
-                                                    }
-                                                    className="btn btn-sm btn-danger"
-                                                >
-                                                    🗑️ Eliminar
-                                                </button>
+                                            <td className="text-nowrap">
+                                                <div className="btn-group btn-group-sm" role="group">
+                                                    <button
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/contracts/${contract.id}`
+                                                            )
+                                                        }
+                                                        className="btn btn-info"
+                                                        title="Ver detalles"
+                                                    >
+                                                        👁️
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/contracts/${contract.id}/edit`
+                                                            )
+                                                        }
+                                                        className="btn btn-warning"
+                                                        title="Editar"
+                                                    >
+                                                        ✏️
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDelete(contract.id)
+                                                        }
+                                                        className="btn btn-danger"
+                                                        title="Eliminar"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))}
