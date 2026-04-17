@@ -1,0 +1,122 @@
+@if (loading()) {
+  <div class="loading-overlay">
+    <mat-spinner diameter="48"></mat-spinner>
+  </div>
+} @else {
+  <div class="dashboard">
+    <!-- Welcome banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h1>{{ getGreeting() }}, {{ user()?.name || getEmailPrefix() }} 👋</h1>
+        <p>Aquí tienes un resumen de la actividad de tu empresa hoy.</p>
+      </div>
+      <div class="welcome-actions">
+        <a routerLink="/employees/new" class="btn btn-primary">
+          <mat-icon>person_add</mat-icon> Nuevo empleado
+        </a>
+        <a routerLink="/contracts/new" class="btn btn-secondary">
+          <mat-icon>add_circle</mat-icon> Nuevo contrato
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats grid -->
+    <div class="stats-grid">
+      @for (stat of stats(); track stat.route) {
+        <a class="stat-card stat-{{ stat.color }}" [routerLink]="stat.route">
+          <div class="stat-icon">
+            <mat-icon>{{ stat.icon }}</mat-icon>
+          </div>
+          <div class="stat-info">
+            <span class="stat-value">{{ stat.value }}</span>
+            <span class="stat-title">{{ stat.title }}</span>
+            <span class="stat-change">{{ stat.change }}</span>
+          </div>
+        </a>
+      }
+    </div>
+
+    <!-- Charts row -->
+    <div class="charts-row">
+      <!-- Status distribution -->
+      <div class="card chart-card">
+        <div class="chart-header">
+          <h3>Estado de contratos</h3>
+          <span class="chart-total">{{ contracts().length }} total</span>
+        </div>
+        <div class="status-bars">
+          @for (s of contractsByStatus(); track s.key) {
+            <div class="status-bar-item">
+              <div class="status-bar-info">
+                <span class="status-dot" [style.background]="s.color"></span>
+                <span class="status-name">{{ s.label }}</span>
+                <span class="status-count">{{ s.count }}</span>
+              </div>
+              <div class="bar-track">
+                <div class="bar-fill" [style.width.%]="s.pct" [style.background]="s.color"></div>
+              </div>
+              <span class="status-pct">{{ s.pct }}%</span>
+            </div>
+          }
+          @if (contractsByStatus().length === 0) {
+            <div class="empty-state">
+              <mat-icon>description</mat-icon>
+              <p>Sin contratos registrados</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Type distribution -->
+      <div class="card chart-card">
+        <div class="chart-header">
+          <h3>Tipos de contrato</h3>
+        </div>
+        <div class="type-grid">
+          @for (t of contractsByType(); track t.type) {
+            <div class="type-item" [class.empty]="t.count === 0">
+              <div class="type-circle" [style.--pct]="t.pct">
+                <span class="type-pct">{{ t.pct }}%</span>
+              </div>
+              <span class="type-name">{{ t.type }}</span>
+              <span class="type-count">{{ t.count }} contrato{{ t.count !== 1 ? 's' : '' }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent employees -->
+    <div class="card recent-card">
+      <div class="section-header">
+        <h3>Empleados recientes</h3>
+        <a routerLink="/employees" class="view-all-link">
+          Ver todos <mat-icon>arrow_forward</mat-icon>
+        </a>
+      </div>
+      @if (recentEmployees().length === 0) {
+        <div class="empty-state">
+          <mat-icon>people</mat-icon>
+          <h3>Sin empleados</h3>
+          <p>Comienza agregando tu primer empleado</p>
+        </div>
+      } @else {
+        <div class="recent-list">
+          @for (emp of recentEmployees(); track emp._id) {
+            <a class="recent-item" [routerLink]="['/employees', emp._id]">
+              <div class="emp-avatar">{{ (emp.name[0] + emp.surname[0]).toUpperCase() }}</div>
+              <div class="emp-info">
+                <span class="emp-name">{{ emp.name }} {{ emp.surname }}</span>
+                <span class="emp-detail">{{ emp.email }}</span>
+              </div>
+              <div class="emp-meta">
+                <span class="emp-nif">{{ emp.nif }}</span>
+                <mat-icon class="arrow-icon">chevron_right</mat-icon>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

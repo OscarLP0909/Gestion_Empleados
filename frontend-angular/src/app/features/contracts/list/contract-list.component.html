@@ -1,0 +1,103 @@
+<div class="page-header">
+  <div>
+    <h1>Contratos</h1>
+    <p>{{ filtered().length }} de {{ contracts().length }} contratos</p>
+  </div>
+  @if (auth.isHrManager()) {
+    <a routerLink="/contracts/new" class="btn btn-primary">
+      <mat-icon>add_circle</mat-icon> Nuevo contrato
+    </a>
+  }
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar card">
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input type="text" placeholder="Buscar por empleado, puesto, departamento..."
+      [ngModel]="search()" (ngModelChange)="search.set($event)" />
+    @if (search()) {
+      <button class="clear-btn" (click)="search.set('')"><mat-icon>close</mat-icon></button>
+    }
+  </div>
+  <div class="filter-group">
+    <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)" class="status-select">
+      <option value="">Todos los estados</option>
+      @for (s of statuses; track s) {
+        <option [value]="s">{{ s }}</option>
+      }
+    </select>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (filtered().length === 0) {
+  <div class="card">
+    <div class="empty-state">
+      <mat-icon>description</mat-icon>
+      <h3>Sin contratos</h3>
+      <p>{{ search() || statusFilter() ? 'Prueba otros filtros' : 'Crea el primer contrato' }}</p>
+    </div>
+  </div>
+} @else {
+  <div class="card table-card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Tipo</th>
+            <th>Puesto</th>
+            <th>Departamento</th>
+            <th>Salario</th>
+            <th>Inicio</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (c of filtered(); track getId(c)) {
+            <tr>
+              <td>
+                @if (c.employee) {
+                  <span class="emp-name-cell">{{ c.employee.name }} {{ c.employee.surname }}</span>
+                } @else {
+                  <span class="text-muted">—</span>
+                }
+              </td>
+              <td><span class="type-tag">{{ c.contractType }}</span></td>
+              <td>{{ c.position }}</td>
+              <td>{{ c.department }}</td>
+              <td><strong>{{ c.salaryAmount | currency:'EUR':'symbol':'1.0-0' }}</strong></td>
+              <td>{{ c.startDate | date:'dd/MM/yyyy' }}</td>
+              <td><span [class]="'badge ' + getStatusClass(c.status)">{{ c.status }}</span></td>
+              <td>
+                <div class="action-btns">
+                  <a [routerLink]="['/contracts', getId(c)]" class="icon-btn" matTooltip="Ver detalle">
+                    <mat-icon>visibility</mat-icon>
+                  </a>
+                  @if (auth.isHrManager()) {
+                    <a [routerLink]="['/contracts', getId(c), 'edit']" class="icon-btn edit" matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                    @if (auth.isAdmin()) {
+                      <button class="icon-btn danger" (click)="confirmDelete(c)"
+                        [disabled]="deletingId() === getId(c)" matTooltip="Eliminar">
+                        @if (deletingId() === getId(c)) {
+                          <mat-spinner diameter="16"></mat-spinner>
+                        } @else {
+                          <mat-icon>delete</mat-icon>
+                        }
+                      </button>
+                    }
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

@@ -1,0 +1,101 @@
+<div class="page-header">
+  <div>
+    <h1>Empleados</h1>
+    <p>{{ filtered().length }} de {{ employees().length }} empleados</p>
+  </div>
+  @if (auth.isHrManager()) {
+    <a routerLink="/employees/new" class="btn btn-primary">
+      <mat-icon>person_add</mat-icon> Nuevo empleado
+    </a>
+  }
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar card">
+  <div class="search-bar">
+    <mat-icon>search</mat-icon>
+    <input
+      type="text"
+      placeholder="Buscar por nombre, NIF, email, ciudad..."
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    />
+    @if (search()) {
+      <button class="clear-btn" (click)="search.set('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    }
+  </div>
+</div>
+
+<!-- Table -->
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (filtered().length === 0) {
+  <div class="card">
+    <div class="empty-state">
+      <mat-icon>people_outline</mat-icon>
+      <h3>{{ search() ? 'Sin resultados' : 'No hay empleados' }}</h3>
+      <p>{{ search() ? 'Prueba con otros términos de búsqueda' : 'Comienza añadiendo tu primer empleado' }}</p>
+    </div>
+  </div>
+} @else {
+  <div class="card table-card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>NIF</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Ciudad</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (emp of filtered(); track getId(emp)) {
+            <tr>
+              <td>
+                <div class="emp-cell">
+                  <div class="emp-avatar-sm">{{ (emp.name[0] + emp.surname[0]).toUpperCase() }}</div>
+                  <div>
+                    <span class="emp-name">{{ emp.name }} {{ emp.surname }}</span>
+                  </div>
+                </div>
+              </td>
+              <td><span class="mono-text">{{ emp.nif }}</span></td>
+              <td>{{ emp.email }}</td>
+              <td>{{ emp.phone || '—' }}</td>
+              <td>{{ emp.city || '—' }}</td>
+              <td>
+                <div class="action-btns">
+                  <a [routerLink]="['/employees', getId(emp)]" class="icon-btn" matTooltip="Ver detalle">
+                    <mat-icon>visibility</mat-icon>
+                  </a>
+                  @if (auth.isHrManager()) {
+                    <a [routerLink]="['/employees', getId(emp), 'edit']" class="icon-btn edit" matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </a>
+                    <button
+                      class="icon-btn danger"
+                      (click)="confirmDelete(emp)"
+                      [disabled]="deletingId() === getId(emp)"
+                      matTooltip="Eliminar"
+                    >
+                      @if (deletingId() === getId(emp)) {
+                        <mat-spinner diameter="16"></mat-spinner>
+                      } @else {
+                        <mat-icon>delete</mat-icon>
+                      }
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

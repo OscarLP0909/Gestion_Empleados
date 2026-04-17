@@ -1,0 +1,67 @@
+.toolbar {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  flex: 1; min-width: 200px;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--hover-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-light);
+    background: var(--card-bg);
+  }
+
+  mat-icon { color: var(--text-muted); }
+  input { border: none; background: none; outline: none; color: var(--text-primary); font-size: 14px; flex: 1; &::placeholder { color: var(--text-muted); } }
+}
+
+.clear-btn {
+  background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 2px; display: flex; border-radius: 4px;
+  &:hover { color: var(--text-primary); background: var(--border-color); }
+  mat-icon { font-size: 18px; }
+}
+
+.status-select {
+  padding: 9px 14px; border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm); background: var(--card-bg);
+  color: var(--text-primary); font-size: 14px; outline: none; cursor: pointer;
+  &:focus { border-color: var(--accent-color); box-shadow: 0 0 0 3px var(--accent-light); }
+}
+
+.table-card { overflow: hidden; }
+.table-wrapper { overflow-x: auto; }
+
+.emp-name-cell { font-weight: 600; color: var(--text-primary); }
+
+.type-tag {
+  display: inline-block;
+  background: var(--accent-light);
+  color: var(--accent-color);
+  font-size: 12px; font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.action-btns { display: flex; align-items: center; gap: 4px; }
+
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; color: var(--text-muted);
+  background: none; transition: all 0.2s; text-decoration: none;
+  mat-icon { font-size: 18px; }
+  &:hover { background: var(--hover-bg); color: var(--text-primary); }
+  &.edit:hover { background: rgba(99,102,241,0.1); color: var(--accent-color); }
+  &.danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

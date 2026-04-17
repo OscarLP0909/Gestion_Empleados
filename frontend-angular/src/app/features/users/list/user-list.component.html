@@ -1,0 +1,73 @@
+<div class="page-header">
+  <div>
+    <h1>Usuarios</h1>
+    <p>{{ users().length }} usuarios registrados</p>
+  </div>
+  <a routerLink="/users/new" class="btn btn-primary">
+    <mat-icon>person_add</mat-icon> Nuevo usuario
+  </a>
+</div>
+
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (users().length === 0) {
+  <div class="card">
+    <div class="empty-state">
+      <mat-icon>group</mat-icon>
+      <h3>Sin usuarios</h3>
+    </div>
+  </div>
+} @else {
+  <div class="card table-card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Email</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users(); track getId(u)) {
+            <tr>
+              <td>
+                <div class="user-cell">
+                  <div class="user-avatar">{{ (u.name || u.email)[0].toUpperCase() }}</div>
+                  <span class="user-name">{{ u.name || '—' }}</span>
+                </div>
+              </td>
+              <td>{{ u.email }}</td>
+              <td>
+                <select class="role-select" [ngModel]="u.role" (ngModelChange)="changeRole(u, $event)"
+                  [disabled]="processing() === getId(u)">
+                  @for (r of roles; track r) {
+                    <option [value]="r">{{ r }}</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <span [class]="'badge ' + (u.isActive ? 'badge-success' : 'badge-secondary')">
+                  {{ u.isActive ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button class="icon-btn" [class]="u.isActive ? 'deactivate' : 'activate'"
+                  (click)="toggleActive(u)" [disabled]="processing() === getId(u)"
+                  [matTooltip]="u.isActive ? 'Desactivar' : 'Activar'">
+                  @if (processing() === getId(u)) {
+                    <mat-spinner diameter="16"></mat-spinner>
+                  } @else {
+                    <mat-icon>{{ u.isActive ? 'block' : 'check_circle' }}</mat-icon>
+                  }
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+}

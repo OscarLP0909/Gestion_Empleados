@@ -1,0 +1,87 @@
+<div class="app-shell" [class.dark]="darkMode()">
+
+  @if (mobileOpen()) {
+    <div class="mobile-overlay" (click)="toggleMobile()"></div>
+  }
+
+  <!-- ========== SIDEBAR ========== -->
+  <aside class="sidebar" [class.collapsed]="sidebarCollapsed()" [class.mobile-open]="mobileOpen()">
+
+    <div class="sidebar-header">
+      <div class="logo">
+        <div class="logo-icon"><mat-icon>corporate_fare</mat-icon></div>
+        <span class="logo-text">HRConnect</span>
+      </div>
+      <button class="collapse-btn" (click)="toggleSidebar()">
+        <mat-icon>{{ sidebarCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (item of visibleItems(); track item.route) {
+        <a
+          class="nav-item"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: item.route === '/dashboard' }"
+          [matTooltip]="sidebarCollapsed() ? item.label : ''"
+          matTooltipPosition="right"
+          (click)="mobileOpen.set(false)"
+        >
+          <mat-icon class="nav-icon">{{ item.icon }}</mat-icon>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="theme-btn" (click)="toggleDarkMode()"
+        [matTooltip]="sidebarCollapsed() ? (darkMode() ? 'Modo claro' : 'Modo oscuro') : ''"
+        matTooltipPosition="right">
+        <mat-icon>{{ darkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        <span class="theme-label">{{ darkMode() ? 'Modo claro' : 'Modo oscuro' }}</span>
+      </button>
+
+      <div class="user-section">
+        <div class="user-avatar-sidebar">{{ getUserInitials() }}</div>
+        <div class="user-info">
+          <span class="user-name-sidebar">{{ user()?.name || user()?.email }}</span>
+          <span class="user-role-sidebar">{{ user()?.role }}</span>
+        </div>
+        <button class="logout-btn-sidebar" (click)="logout()" matTooltip="Cerrar sesión">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ========== MAIN ========== -->
+  <div class="main-area">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu-btn" (click)="toggleMobile()">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span class="topbar-title">Sistema de Gestión de RRHH</span>
+      </div>
+      <div class="topbar-right">
+        <div class="user-menu">
+          <div class="user-avatar-top">{{ getUserInitials() }}</div>
+          <div class="user-details">
+            <span class="user-name-top">{{ user()?.name || user()?.email }}</span>
+            <span class="user-role-top">{{ user()?.role }}</span>
+          </div>
+          <button class="logout-btn-top" (click)="logout()" matTooltip="Cerrar sesión">
+            <mat-icon>logout</mat-icon>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-content">
+      <router-outlet />
+    </main>
+  </div>
+</div>
+
+<app-toast-container />

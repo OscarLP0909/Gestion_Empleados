@@ -1,0 +1,83 @@
+<div class="form-page">
+  <div class="detail-header">
+    <a routerLink="/employees" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Empleados
+    </a>
+  </div>
+
+  <div class="card form-card">
+    <div class="form-hero">
+      <div class="form-icon">
+        <mat-icon>{{ isEdit() ? 'edit' : 'person_add' }}</mat-icon>
+      </div>
+      <div>
+        <h1>{{ isEdit() ? 'Editar empleado' : 'Nuevo empleado' }}</h1>
+        <p>{{ isEdit() ? 'Modifica los datos del empleado' : 'Completa el formulario para registrar un nuevo empleado' }}</p>
+      </div>
+    </div>
+
+    @if (loadingData()) {
+      <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-section">
+          <h2 class="section-title">Información personal</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Nombre <span class="required">*</span></label>
+              <input type="text" formControlName="name" placeholder="Ej: Juan" [class.ng-invalid]="hasError('name', 'required') || hasError('name', 'minlength')" />
+              @if (hasError('name', 'required')) { <span class="field-error">El nombre es obligatorio</span> }
+            </div>
+            <div class="form-field">
+              <label>Apellidos <span class="required">*</span></label>
+              <input type="text" formControlName="surname" placeholder="Ej: García López" />
+              @if (hasError('surname', 'required')) { <span class="field-error">Los apellidos son obligatorios</span> }
+            </div>
+            <div class="form-field">
+              <label>NIF <span class="required">*</span></label>
+              <input type="text" formControlName="nif" placeholder="12345678A" style="text-transform:uppercase" />
+              @if (hasError('nif', 'required')) { <span class="field-error">El NIF es obligatorio</span> }
+              @if (hasError('nif', 'pattern')) { <span class="field-error">Formato inválido (8 dígitos + letra)</span> }
+            </div>
+            <div class="form-field">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" formControlName="email" placeholder="ejemplo@empresa.com" />
+              @if (hasError('email', 'required')) { <span class="field-error">El email es obligatorio</span> }
+              @if (hasError('email', 'email')) { <span class="field-error">Email inválido</span> }
+            </div>
+            <div class="form-field">
+              <label>Teléfono</label>
+              <input type="tel" formControlName="phone" placeholder="+34 600 000 000" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-title">Ubicación</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Ciudad</label>
+              <input type="text" formControlName="city" placeholder="Madrid" />
+            </div>
+            <div class="form-field">
+              <label>Provincia</label>
+              <input type="text" formControlName="province" placeholder="Madrid" />
+            </div>
+            <div class="form-field">
+              <label>País</label>
+              <input type="text" formControlName="country" placeholder="España" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/employees" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            @if (loading()) { <mat-spinner diameter="18" color="accent"></mat-spinner> }
+            {{ isEdit() ? 'Guardar cambios' : 'Crear empleado' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

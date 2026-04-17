@@ -1,0 +1,23 @@
+.table-card { overflow: hidden; }
+.table-wrapper { overflow-x: auto; }
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--accent-gradient); color: #fff; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.user-name { font-weight: 600; color: var(--text-primary); }
+
+.role-select {
+  padding: 6px 10px; border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm); background: var(--card-bg); color: var(--text-primary);
+  font-size: 13px; cursor: pointer; outline: none;
+  &:focus { border-color: var(--accent-color); }
+  &:disabled { opacity: 0.5; }
+}
+
+.icon-btn {
+  width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none; background: none; transition: all 0.2s;
+  mat-icon { font-size: 18px; }
+  &.deactivate { color: var(--warning); &:hover { background: var(--warning-bg); } }
+  &.activate { color: var(--success); &:hover { background: var(--success-bg); } }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

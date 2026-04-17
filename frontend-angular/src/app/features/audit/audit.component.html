@@ -1,0 +1,93 @@
+<div class="page-header">
+  <div>
+    <h1>Auditoría</h1>
+    <p>{{ total() }} registros en total</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card filters-card">
+  <div class="filters-row">
+    <div class="form-field">
+      <label>Acción</label>
+      <select [(ngModel)]="filters.action" (change)="applyFilters()">
+        <option value="">Todas</option>
+        @for (a of actions; track a) { <option [value]="a">{{ a }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Entidad</label>
+      <select [(ngModel)]="filters.entityType" (change)="applyFilters()">
+        <option value="">Todas</option>
+        @for (e of entityTypes; track e) { <option [value]="e">{{ e }}</option> }
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Desde</label>
+      <input type="date" [(ngModel)]="filters.startDate" (change)="applyFilters()" />
+    </div>
+    <div class="form-field">
+      <label>Hasta</label>
+      <input type="date" [(ngModel)]="filters.endDate" (change)="applyFilters()" />
+    </div>
+    <button class="btn btn-secondary" (click)="clearFilters()">
+      <mat-icon>clear</mat-icon> Limpiar
+    </button>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (logs().length === 0) {
+  <div class="card">
+    <div class="empty-state">
+      <mat-icon>history</mat-icon>
+      <h3>Sin registros</h3>
+      <p>No hay eventos que coincidan con los filtros</p>
+    </div>
+  </div>
+} @else {
+  <div class="card table-card">
+    <div class="table-wrapper">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Usuario</th>
+            <th>Acción</th>
+            <th>Entidad</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (log of logs(); track log._id) {
+            <tr>
+              <td class="date-cell">{{ log.createdAt | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ log.userName }}</td>
+              <td>
+                <span [class]="'badge ' + getActionClass(log.action)">
+                  <mat-icon>{{ getActionIcon(log.action) }}</mat-icon>
+                  {{ log.action }}
+                </span>
+              </td>
+              <td><span class="entity-tag">{{ log.entityType }}: {{ log.entityName }}</span></td>
+              <td class="desc-cell">{{ log.description }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    <!-- Pagination -->
+    <div class="pagination">
+      <span class="pagination-info">Página {{ page() }} de {{ totalPages }}</span>
+      <div class="pagination-btns">
+        <button class="page-btn" (click)="prevPage()" [disabled]="page() <= 1">
+          <mat-icon>chevron_left</mat-icon>
+        </button>
+        <button class="page-btn" (click)="nextPage()" [disabled]="page() >= totalPages">
+          <mat-icon>chevron_right</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+}

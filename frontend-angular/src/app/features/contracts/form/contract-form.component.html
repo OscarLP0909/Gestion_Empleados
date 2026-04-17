@@ -1,0 +1,106 @@
+<div class="form-page">
+  <div class="detail-header">
+    <a routerLink="/contracts" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Contratos
+    </a>
+  </div>
+
+  <div class="card form-card">
+    <div class="form-hero">
+      <div class="form-icon"><mat-icon>{{ isEdit() ? 'edit' : 'add_circle' }}</mat-icon></div>
+      <div>
+        <h1>{{ isEdit() ? 'Editar contrato' : 'Nuevo contrato' }}</h1>
+        <p>{{ isEdit() ? 'Modifica los datos del contrato' : 'Crea un nuevo contrato laboral' }}</p>
+      </div>
+    </div>
+
+    @if (loadingData()) {
+      <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()">
+        <div class="form-section">
+          <h2 class="section-title">Empleado y tipo</h2>
+          <div class="form-grid">
+            <div class="form-field full-width">
+              <label>Empleado <span class="required">*</span></label>
+              <select formControlName="employeeId">
+                <option value="">Selecciona un empleado</option>
+                @for (emp of employees(); track getId(emp)) {
+                  <option [value]="getId(emp)">{{ getEmpName(emp) }}</option>
+                }
+              </select>
+              @if (hasError('employeeId', 'required')) { <span class="field-error">Selecciona un empleado</span> }
+            </div>
+            <div class="form-field">
+              <label>Tipo de contrato <span class="required">*</span></label>
+              <select formControlName="contractType">
+                @for (t of contractTypes; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Tipo de jornada <span class="required">*</span></label>
+              <select formControlName="workdayType">
+                @for (t of workdayTypes; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-title">Puesto y departamento</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Puesto <span class="required">*</span></label>
+              <input type="text" formControlName="position" placeholder="Ej: Desarrollador Senior" />
+              @if (hasError('position', 'required')) { <span class="field-error">El puesto es obligatorio</span> }
+            </div>
+            <div class="form-field">
+              <label>Departamento <span class="required">*</span></label>
+              <input type="text" formControlName="department" placeholder="Ej: Tecnología" />
+              @if (hasError('department', 'required')) { <span class="field-error">El departamento es obligatorio</span> }
+            </div>
+            <div class="form-field">
+              <label>Categoría <span class="required">*</span></label>
+              <input type="text" formControlName="category" placeholder="Ej: Senior" />
+              @if (hasError('category', 'required')) { <span class="field-error">La categoría es obligatoria</span> }
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h2 class="section-title">Salario y fechas</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label>Tipo de salario <span class="required">*</span></label>
+              <select formControlName="salaryType">
+                @for (t of salaryTypes; track t) { <option [value]="t">{{ t }}</option> }
+              </select>
+            </div>
+            <div class="form-field">
+              <label>Importe salario (€) <span class="required">*</span></label>
+              <input type="number" formControlName="salaryAmount" placeholder="30000" min="0" />
+              @if (hasError('salaryAmount', 'min')) { <span class="field-error">El salario debe ser positivo</span> }
+            </div>
+            <div class="form-field">
+              <label>Fecha inicio <span class="required">*</span></label>
+              <input type="date" formControlName="startDate" />
+              @if (hasError('startDate', 'required')) { <span class="field-error">La fecha de inicio es obligatoria</span> }
+            </div>
+            <div class="form-field">
+              <label>Fecha fin (opcional)</label>
+              <input type="date" formControlName="endDate" />
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <a routerLink="/contracts" class="btn btn-secondary">Cancelar</a>
+          <button type="submit" class="btn btn-primary" [disabled]="loading()">
+            @if (loading()) { <mat-spinner diameter="18" color="accent"></mat-spinner> }
+            {{ isEdit() ? 'Guardar cambios' : 'Crear contrato' }}
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

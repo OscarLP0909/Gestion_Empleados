@@ -1,0 +1,188 @@
+<div class="page-header">
+  <div>
+    <h1>Informes</h1>
+    <p>Análisis y estadísticas de la plantilla</p>
+  </div>
+  <button class="btn btn-secondary" (click)="exportCSV()">
+    <mat-icon>download</mat-icon> Exportar CSV
+  </button>
+</div>
+
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else {
+<div class="reports-layout">
+
+  <!-- ===== KPI ROW ===== -->
+  <div class="kpi-row">
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-icon"><mat-icon>people</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-value">{{ employees().length }}</span>
+        <span class="kpi-label">Empleados</span>
+      </div>
+      <div class="kpi-trend">
+        <mat-icon>trending_up</mat-icon>
+      </div>
+    </div>
+
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-icon"><mat-icon>description</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-value">{{ contracts().length }}</span>
+        <span class="kpi-label">Contratos totales</span>
+      </div>
+      <div class="kpi-trend"><mat-icon>trending_up</mat-icon></div>
+    </div>
+
+    <div class="kpi-card kpi-green">
+      <div class="kpi-icon"><mat-icon>task_alt</mat-icon></div>
+      <div class="kpi-body">
+        <span class="kpi-value">{{ activeContracts() }}</span>
+        <span class="kpi-label">Contratos activos</span>
+      </div>
+      <div class="kpi-trend"><mat-icon>trending_up</mat-icon></div>
+    </div>
+
+    @if (salaryStats(); as s) {
+      <div class="kpi-card kpi-amber">
+        <div class="kpi-icon"><mat-icon>payments</mat-icon></div>
+        <div class="kpi-body">
+          <span class="kpi-value">{{ s.avg | currency:'EUR':'symbol':'1.0-0' }}</span>
+          <span class="kpi-label">Salario medio</span>
+        </div>
+        <div class="kpi-trend"><mat-icon>trending_flat</mat-icon></div>
+      </div>
+    }
+  </div>
+
+  <!-- ===== MAIN GRID ===== -->
+  <div class="main-grid">
+
+    <!-- Salary breakdown -->
+    @if (salaryStats(); as s) {
+      <div class="card salary-card">
+        <div class="section-head">
+          <span class="section-icon salary-icon"><mat-icon>account_balance_wallet</mat-icon></span>
+          <div>
+            <h3>Rango salarial</h3>
+            <p>Basado en {{ s.total }} contrato{{ s.total !== 1 ? 's' : '' }} activo{{ s.total !== 1 ? 's' : '' }}</p>
+          </div>
+        </div>
+        <div class="salary-stats">
+          <div class="salary-stat">
+            <span class="salary-stat-label">Mínimo</span>
+            <span class="salary-stat-value min">{{ s.min | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="salary-stat center">
+            <span class="salary-stat-label">Media</span>
+            <span class="salary-stat-value avg">{{ s.avg | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+          <div class="salary-stat">
+            <span class="salary-stat-label">Máximo</span>
+            <span class="salary-stat-value max">{{ s.max | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+        <div class="salary-bar-wrap">
+          <div class="salary-bar">
+            <div class="salary-bar-fill" [style.left.%]="0" [style.right.%]="0"></div>
+            <div class="salary-marker avg-marker" [style.left.%]="s.avgPct">
+              <span>Media</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- By department -->
+    <div class="card dept-card">
+      <div class="section-head">
+        <span class="section-icon dept-icon"><mat-icon>business</mat-icon></span>
+        <div>
+          <h3>Por departamento</h3>
+          <p>Distribución de contratos</p>
+        </div>
+      </div>
+      @if (byDepartment().length === 0) {
+        <div class="empty-state"><mat-icon>bar_chart</mat-icon><p>Sin datos</p></div>
+      } @else {
+        <div class="dept-list">
+          @for (d of byDepartment(); track d.dep; let i = $index) {
+            <div class="dept-item">
+              <div class="dept-rank">#{{ i + 1 }}</div>
+              <div class="dept-info">
+                <span class="dept-name">{{ d.dep }}</span>
+                <div class="dept-bar-wrap">
+                  <div class="dept-bar">
+                    <div class="dept-bar-fill" [style.width.%]="d.pct"></div>
+                  </div>
+                  <span class="dept-count">{{ d.count }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- By status -->
+    <div class="card status-card">
+      <div class="section-head">
+        <span class="section-icon status-icon"><mat-icon>donut_large</mat-icon></span>
+        <div>
+          <h3>Por estado</h3>
+          <p>Distribución actual</p>
+        </div>
+      </div>
+      <div class="status-list">
+        @for (s of contractsByStatus(); track s.key) {
+          <div class="status-row">
+            <div class="status-left">
+              <span class="status-dot-lg" [style.background]="s.color"></span>
+              <span class="status-lbl">{{ s.label }}</span>
+            </div>
+            <div class="status-bar-wrap">
+              <div class="status-bar-track">
+                <div class="status-bar-fill" [style.width.%]="s.pct" [style.background]="s.color"></div>
+              </div>
+            </div>
+            <span class="status-cnt">{{ s.count }}</span>
+            <span class="status-pct-lbl">{{ s.pct }}%</span>
+          </div>
+        }
+        @if (contractsByStatus().length === 0) {
+          <div class="empty-state"><mat-icon>description</mat-icon><p>Sin contratos</p></div>
+        }
+      </div>
+    </div>
+
+    <!-- By country -->
+    <div class="card country-card">
+      <div class="section-head">
+        <span class="section-icon country-icon"><mat-icon>public</mat-icon></span>
+        <div>
+          <h3>Por país</h3>
+          <p>Distribución geográfica</p>
+        </div>
+      </div>
+      @if (byCountry().length === 0) {
+        <div class="empty-state"><mat-icon>public</mat-icon><p>Sin datos</p></div>
+      } @else {
+        <div class="country-list">
+          @for (c of byCountry(); track c.country) {
+            <div class="country-item">
+              <div class="country-flag">🌍</div>
+              <span class="country-name">{{ c.country }}</span>
+              <span class="country-bar-wrap">
+                <span class="country-bar" [style.width.%]="c.pct"></span>
+              </span>
+              <span class="badge badge-secondary">{{ c.count }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+  </div>
+</div>
+}

@@ -1,0 +1,79 @@
+<div class="page-header">
+  <div>
+    <h1>Aprobaciones</h1>
+    <p>{{ contracts().length }} contrato{{ contracts().length !== 1 ? 's' : '' }} pendiente{{ contracts().length !== 1 ? 's' : '' }} de revisión</p>
+  </div>
+</div>
+
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (contracts().length === 0) {
+  <div class="card">
+    <div class="empty-state">
+      <mat-icon>check_circle</mat-icon>
+      <h3>Todo al día</h3>
+      <p>No hay contratos pendientes de aprobación</p>
+    </div>
+  </div>
+} @else {
+  <div class="approvals-grid">
+    @for (c of contracts(); track getId(c)) {
+      <div class="approval-card card">
+        <div class="approval-header">
+          <span class="badge badge-warning">PENDIENTE</span>
+          <a [routerLink]="['/contracts', getId(c)]" class="view-link">
+            Ver detalle <mat-icon>open_in_new</mat-icon>
+          </a>
+        </div>
+
+        @if (c.employee) {
+          <div class="approval-employee">
+            <div class="emp-avatar-sm">{{ (c.employee.name[0] + c.employee.surname[0]).toUpperCase() }}</div>
+            <div>
+              <span class="emp-name">{{ c.employee.name }} {{ c.employee.surname }}</span>
+              <span class="emp-nif">{{ c.employee.nif }}</span>
+            </div>
+          </div>
+        }
+
+        <div class="approval-details">
+          <div class="detail-item">
+            <mat-icon>work</mat-icon>
+            <span>{{ c.position }} — {{ c.department }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>description</mat-icon>
+            <span>{{ c.contractType }} · {{ c.workdayType }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>payments</mat-icon>
+            <span>{{ c.salaryAmount | currency:'EUR':'symbol':'1.0-0' }} {{ c.salaryType }}</span>
+          </div>
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <span>Desde {{ c.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="approval-actions">
+          <button class="btn btn-danger reject-btn" (click)="reject(c)" [disabled]="processing() === getId(c)">
+            @if (processing() === getId(c)) {
+              <mat-spinner diameter="16"></mat-spinner>
+            } @else {
+              <mat-icon>close</mat-icon>
+            }
+            Rechazar
+          </button>
+          <button class="btn btn-success approve-btn" (click)="approve(c)" [disabled]="processing() === getId(c)">
+            @if (processing() === getId(c)) {
+              <mat-spinner diameter="16"></mat-spinner>
+            } @else {
+              <mat-icon>check</mat-icon>
+            }
+            Aprobar
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+}

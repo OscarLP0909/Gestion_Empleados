@@ -58,7 +58,7 @@ export const createContract = async (req: Request, res: Response, next: NextFunc
 
 export const getContracts = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const contracts = await Contract.find();
+        const contracts = await Contract.find().populate("employeeId", "name surname nif email");
         res.status(200).json(contracts);
     } catch (error) {
         next(error);
@@ -68,7 +68,7 @@ export const getContracts = async (req: Request, res: Response, next: NextFuncti
 export const getContractById = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { id } = req.params;
-        const contract = await Contract.findById(id);
+        const contract = await Contract.findById(id).populate("employeeId", "name surname nif email");
         if (!contract) {
             res.status(404).json({ message: "Contract not found" });
             return;

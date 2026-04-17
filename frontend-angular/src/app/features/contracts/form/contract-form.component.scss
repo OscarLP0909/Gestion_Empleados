@@ -1,0 +1,13 @@
+.form-page { display: flex; flex-direction: column; gap: 20px; }
+.back-link { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); text-decoration: none; font-size: 14px; font-weight: 500; &:hover { color: var(--text-primary); } mat-icon { font-size: 18px; } }
+.detail-header { display: flex; align-items: center; }
+.form-card { padding: 32px; }
+.form-hero { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color); }
+.form-icon { width: 52px; height: 52px; border-radius: 14px; background: var(--accent-light); display: flex; align-items: center; justify-content: center; flex-shrink: 0; mat-icon { color: var(--accent-color); font-size: 24px; } }
+.form-hero h1 { font-size: 20px; font-weight: 700; color: var(--text-primary); margin: 0 0 4px; }
+.form-hero p { font-size: 13px; color: var(--text-muted); margin: 0; }
+.form-section { margin-bottom: 28px; }
+.section-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); margin: 0 0 16px; }
+.required { color: var(--danger); }
+.full-width { grid-column: 1 / -1; }
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color); }

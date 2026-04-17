@@ -1,0 +1,99 @@
+.toolbar {
+  padding: 14px 16px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-bar {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--hover-bg);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-light);
+    background: var(--card-bg);
+  }
+
+  mat-icon { color: var(--text-muted); }
+
+  input {
+    border: none; background: none; outline: none;
+    color: var(--text-primary); font-size: 14px; flex: 1;
+    &::placeholder { color: var(--text-muted); }
+  }
+}
+
+.clear-btn {
+  background: none; border: none; cursor: pointer;
+  color: var(--text-muted); padding: 2px; display: flex;
+  border-radius: 4px;
+  &:hover { color: var(--text-primary); background: var(--border-color); }
+  mat-icon { font-size: 18px; }
+}
+
+.table-card { overflow: hidden; }
+.table-wrapper { overflow-x: auto; }
+
+.emp-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.emp-avatar-sm {
+  width: 34px; height: 34px;
+  border-radius: 50%;
+  background: var(--accent-gradient);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.emp-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.mono-text {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 13px;
+  background: var(--hover-bg);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.icon-btn {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; border: none;
+  color: var(--text-muted);
+  background: none;
+  transition: all 0.2s;
+  text-decoration: none;
+
+  mat-icon { font-size: 18px; }
+
+  &:hover { background: var(--hover-bg); color: var(--text-primary); }
+  &.edit:hover { background: rgba(99,102,241,0.1); color: var(--accent-color); }
+  &.danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

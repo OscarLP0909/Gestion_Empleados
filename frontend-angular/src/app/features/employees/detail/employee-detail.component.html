@@ -1,0 +1,110 @@
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (employee(); as emp) {
+  <div class="detail-page">
+    <!-- Back + actions -->
+    <div class="detail-header">
+      <a routerLink="/employees" class="back-link">
+        <mat-icon>arrow_back</mat-icon> Empleados
+      </a>
+      @if (auth.isHrManager()) {
+        <div class="header-actions">
+          <a [routerLink]="['/employees', getId(emp), 'edit']" class="btn btn-secondary">
+            <mat-icon>edit</mat-icon> Editar
+          </a>
+          <button class="btn btn-danger" (click)="confirmDelete()">
+            <mat-icon>delete</mat-icon> Eliminar
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- Profile card -->
+    <div class="card profile-card">
+      <div class="profile-hero">
+        <div class="profile-avatar">{{ (emp.name[0] + emp.surname[0]).toUpperCase() }}</div>
+        <div class="profile-info">
+          <h1>{{ emp.name }} {{ emp.surname }}</h1>
+          <p class="profile-nif">
+            <mat-icon>badge</mat-icon> {{ emp.nif }}
+          </p>
+        </div>
+      </div>
+
+      <div class="profile-details">
+        <div class="detail-item">
+          <mat-icon>email</mat-icon>
+          <div>
+            <span class="detail-label">Correo electrónico</span>
+            <span class="detail-value">{{ emp.email }}</span>
+          </div>
+        </div>
+        @if (emp.phone) {
+          <div class="detail-item">
+            <mat-icon>phone</mat-icon>
+            <div>
+              <span class="detail-label">Teléfono</span>
+              <span class="detail-value">{{ emp.phone }}</span>
+            </div>
+          </div>
+        }
+        @if (emp.city) {
+          <div class="detail-item">
+            <mat-icon>location_on</mat-icon>
+            <div>
+              <span class="detail-label">Ubicación</span>
+              <span class="detail-value">{{ emp.city }}{{ emp.province ? ', ' + emp.province : '' }}{{ emp.country ? ', ' + emp.country : '' }}</span>
+            </div>
+          </div>
+        }
+        @if (emp.createdAt) {
+          <div class="detail-item">
+            <mat-icon>calendar_today</mat-icon>
+            <div>
+              <span class="detail-label">Fecha de alta</span>
+              <span class="detail-value">{{ emp.createdAt | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Contracts -->
+    <div class="card contracts-card">
+      <div class="section-header">
+        <h3>Historial de contratos</h3>
+        @if (auth.isHrManager()) {
+          <a routerLink="/contracts/new" class="btn btn-primary">
+            <mat-icon>add</mat-icon> Nuevo contrato
+          </a>
+        }
+      </div>
+
+      @if (contracts().length === 0) {
+        <div class="empty-state">
+          <mat-icon>description</mat-icon>
+          <h3>Sin contratos</h3>
+          <p>Este empleado no tiene contratos registrados</p>
+        </div>
+      } @else {
+        <div class="contracts-list">
+          @for (c of contracts(); track c._id) {
+            <a class="contract-item" [routerLink]="['/contracts', c._id]">
+              <div class="contract-left">
+                <span [class]="'badge ' + getStatusClass(c.status)">{{ c.status }}</span>
+                <div class="contract-info">
+                  <span class="contract-type">{{ c.contractType }} — {{ c.position }}</span>
+                  <span class="contract-dept">{{ c.department }}</span>
+                </div>
+              </div>
+              <div class="contract-right">
+                <span class="contract-salary">{{ c.salaryAmount | currency:'EUR':'symbol':'1.0-0' }}</span>
+                <mat-icon>chevron_right</mat-icon>
+              </div>
+            </a>
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

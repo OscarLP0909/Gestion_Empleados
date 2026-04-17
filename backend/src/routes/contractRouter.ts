@@ -37,15 +37,16 @@ router.get(
 
 // ✅ Lectura de contratos (todos los roles autenticados)
 router.get("/", ensureAuthenticated, getContracts);
+
+// Obtener contratos PENDIENTES (debe ir antes de /:id)
+router.get("/pending", ensureAuthenticated, isHROrAdmin, getContractsPending);
+
 router.get(
     "/:id",
     ensureAuthenticated,
     validateObjectId("id"),
     getContractById
 );
-
-// Obtener contratos PENDIENTES
-router.get("/pending", ensureAuthenticated, authorizeRole("ADMIN"), authorizeRole("HR_MANAGER"), getContractsPending);
 
 // ✅ Crear contrato (solo HR_MANAGER o ADMIN)
 router.post(

@@ -1,0 +1,56 @@
+<div class="form-page">
+  <div class="detail-header">
+    <a routerLink="/users" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Usuarios
+    </a>
+  </div>
+  <div class="card form-card">
+    <div class="form-hero">
+      <div class="form-icon"><mat-icon>person_add</mat-icon></div>
+      <div>
+        <h1>Nuevo usuario</h1>
+        <p>Crea un acceso al sistema para un nuevo usuario</p>
+      </div>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Nombre completo <span class="required">*</span></label>
+          <input type="text" formControlName="name" placeholder="Juan García" />
+          @if (hasError('name', 'required')) { <span class="field-error">El nombre es obligatorio</span> }
+        </div>
+        <div class="form-field">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" formControlName="email" placeholder="juan@empresa.com" />
+          @if (hasError('email', 'required')) { <span class="field-error">El email es obligatorio</span> }
+          @if (hasError('email', 'email')) { <span class="field-error">Email inválido</span> }
+        </div>
+        <div class="form-field">
+          <label>Contraseña <span class="required">*</span></label>
+          <div class="pass-wrapper">
+            <input [type]="showPassword() ? 'text' : 'password'" formControlName="password" placeholder="Mínimo 8 caracteres" />
+            <button type="button" class="toggle-pass" (click)="showPassword.update(v => !v)">
+              <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+          </div>
+          @if (hasError('password', 'required')) { <span class="field-error">La contraseña es obligatoria</span> }
+          @if (hasError('password', 'minlength')) { <span class="field-error">Mínimo 8 caracteres</span> }
+        </div>
+        <div class="form-field">
+          <label>Rol <span class="required">*</span></label>
+          <select formControlName="role">
+            @for (r of roles; track r) { <option [value]="r">{{ r }}</option> }
+          </select>
+        </div>
+      </div>
+      <div class="form-actions">
+        <a routerLink="/users" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary" [disabled]="loading()">
+          @if (loading()) { <mat-spinner diameter="18" color="accent"></mat-spinner> }
+          Crear usuario
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

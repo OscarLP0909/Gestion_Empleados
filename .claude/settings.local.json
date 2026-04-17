@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ng version *)",
+      "Bash(npm --version)",
+      "Bash(npx @angular/cli@latest version)",
+      "Bash(npm install *)",
+      "Bash(ng new *)",
+      "Bash(ng add *)",
+      "Bash(ng build *)",
+      "Bash(ng serve *)",
+      "Bash(curl -s http://localhost:4200)",
+      "Bash(curl *)",
+      "Bash(node -e ' *)"
+    ]
+  }
+}

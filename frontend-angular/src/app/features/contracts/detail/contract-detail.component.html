@@ -1,0 +1,135 @@
+@if (loading()) {
+  <div class="loading-overlay"><mat-spinner diameter="40"></mat-spinner></div>
+} @else if (contract(); as c) {
+  <div class="detail-page">
+    <div class="detail-header">
+      <a routerLink="/contracts" class="back-link">
+        <mat-icon>arrow_back</mat-icon> Contratos
+      </a>
+      @if (auth.isHrManager()) {
+        <div class="header-actions">
+          <a [routerLink]="['/contracts', getId(c), 'edit']" class="btn btn-secondary">
+            <mat-icon>edit</mat-icon> Editar
+          </a>
+          @if (auth.isAdmin()) {
+            <button class="btn btn-danger" (click)="confirmDelete()">
+              <mat-icon>delete</mat-icon> Eliminar
+            </button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="card contract-header-card">
+      <div class="contract-hero">
+        <div class="contract-icon">
+          <mat-icon>description</mat-icon>
+        </div>
+        <div>
+          <h1>{{ c.contractType }} — {{ c.position }}</h1>
+          <p>{{ c.department }}</p>
+        </div>
+        <div class="contract-status-area">
+          <span [class]="'badge badge-lg ' + getStatusClass(c.status)">{{ c.status }}</span>
+        </div>
+      </div>
+
+      @if (auth.isHrManager()) {
+        <div class="status-actions">
+          <span class="status-label">Cambiar estado:</span>
+          @for (s of statuses; track s) {
+            <button
+              class="status-btn"
+              [class.active]="c.status === s"
+              [class]="'status-btn status-' + s.toLowerCase()"
+              (click)="changeStatus(s)"
+              [disabled]="c.status === s || updatingStatus()"
+            >{{ s }}</button>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="info-grid">
+      <div class="card info-card">
+        <h3>Empleado</h3>
+        @if (c.employee) {
+          <div class="info-row">
+            <mat-icon>person</mat-icon>
+            <div>
+              <span class="info-label">Nombre</span>
+              <span class="info-value">{{ c.employee.name }} {{ c.employee.surname }}</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <mat-icon>badge</mat-icon>
+            <div>
+              <span class="info-label">NIF</span>
+              <span class="info-value mono">{{ c.employee.nif }}</span>
+            </div>
+          </div>
+        } @else {
+          <p class="text-muted">Sin datos del empleado</p>
+        }
+      </div>
+
+      <div class="card info-card">
+        <h3>Condiciones laborales</h3>
+        <div class="info-row">
+          <mat-icon>work</mat-icon>
+          <div>
+            <span class="info-label">Jornada</span>
+            <span class="info-value">{{ c.workdayType }}</span>
+          </div>
+        </div>
+        <div class="info-row">
+          <mat-icon>payments</mat-icon>
+          <div>
+            <span class="info-label">Salario {{ c.salaryType }}</span>
+            <span class="info-value salary">{{ c.salaryAmount | currency:'EUR':'symbol':'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card info-card">
+        <h3>Fechas</h3>
+        <div class="info-row">
+          <mat-icon>event</mat-icon>
+          <div>
+            <span class="info-label">Fecha inicio</span>
+            <span class="info-value">{{ c.startDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+        @if (c.endDate) {
+          <div class="info-row">
+            <mat-icon>event_busy</mat-icon>
+            <div>
+              <span class="info-label">Fecha fin</span>
+              <span class="info-value">{{ c.endDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="card info-card">
+        <h3>Clasificación</h3>
+        <div class="info-row">
+          <mat-icon>category</mat-icon>
+          <div>
+            <span class="info-label">Categoría</span>
+            <span class="info-value">{{ c.category }}</span>
+          </div>
+        </div>
+        @if (c.temporaryType) {
+          <div class="info-row">
+            <mat-icon>schedule</mat-icon>
+            <div>
+              <span class="info-label">Tipo temporal</span>
+              <span class="info-value">{{ c.temporaryType }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+}
