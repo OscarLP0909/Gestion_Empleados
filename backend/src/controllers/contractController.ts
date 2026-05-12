@@ -19,6 +19,15 @@ export const createContract = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
+        let initialStatus = status || "PENDIENTE";
+        if (initialStatus === "APROBADO") {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const start = new Date(startDate);
+            start.setHours(0, 0, 0, 0);
+            if (start <= today) initialStatus = "ACTIVO";
+        }
+
         const contract = new Contract({
             employeeId,
             contractType,
@@ -31,7 +40,7 @@ export const createContract = async (req: Request, res: Response, next: NextFunc
             department: department.trim(),
             category: category.trim(),
             position: position.trim(),
-            status: status || "PENDIENTE"
+            status: initialStatus
         });
 
         await contract.save();
@@ -227,9 +236,19 @@ export const updateStatus = async (req: Request, res: Response, next: NextFuncti
         }
 
         const oldStatus = contract.status;
+
+        let finalStatus = status ?? contract.status;
+        if (finalStatus === "APROBADO") {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const start = new Date(contract.startDate as string);
+            start.setHours(0, 0, 0, 0);
+            if (start <= today) finalStatus = "ACTIVO";
+        }
+
         const updatedContract = await Contract.findByIdAndUpdate(
             id,
-            { status: status ?? contract.status },
+            { status: finalStatus },
             { new: true }
         );
 

@@ -23,7 +23,7 @@
     <!-- Stats grid -->
     <div class="stats-grid">
       @for (stat of stats(); track stat.route) {
-        <a class="stat-card stat-{{ stat.color }}" [routerLink]="stat.route">
+        <a class="stat-card stat-{{ stat.color }}" [routerLink]="stat.route" [queryParams]="stat.queryParams">
           <div class="stat-icon">
             <mat-icon>{{ stat.icon }}</mat-icon>
           </div>

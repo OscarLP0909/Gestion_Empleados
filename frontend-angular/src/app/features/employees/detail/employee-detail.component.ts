@@ -51,6 +51,7 @@ export class EmployeeDetailComponent implements OnInit {
   }
 
   getId(e: Employee): string { return e._id ?? e.id ?? ''; }
+  getContractId(c: Contract): string { return c._id ?? c.id ?? ''; }
 
   getStatusClass(status: string): string {
     const map: Record<string, string> = {

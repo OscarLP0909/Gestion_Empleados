@@ -16,6 +16,7 @@ interface StatCard {
   icon: string;
   color: string;
   route: string;
+  queryParams?: Record<string, string>;
   change?: string;
 }
 
@@ -40,9 +41,9 @@ export class DashboardComponent implements OnInit {
 
     return [
       { title: 'Total Empleados', value: emps.length, icon: 'people', color: 'indigo', route: '/employees', change: '+2 este mes' },
-      { title: 'Contratos Activos', value: active, icon: 'description', color: 'emerald', route: '/contracts', change: `${pending} pendientes` },
+      { title: 'Contratos Activos', value: active, icon: 'description', color: 'emerald', route: '/contracts', queryParams: { status: 'ACTIVO' }, change: `${pending} pendientes` },
       { title: 'Pendientes Aprobación', value: pending, icon: 'pending_actions', color: 'amber', route: '/contracts/approvals', change: 'Requieren atención' },
-      { title: 'Finalizados', value: finished, icon: 'check_circle', color: 'slate', route: '/contracts', change: 'Total histórico' }
+      { title: 'Finalizados', value: finished, icon: 'check_circle', color: 'slate', route: '/contracts', queryParams: { status: 'FINALIZADO' }, change: 'Total histórico' }
     ];
   });
 

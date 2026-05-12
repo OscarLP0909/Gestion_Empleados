@@ -28,7 +28,7 @@ export class ContractService {
   }
 
   getByEmployeeId(employeeId: string): Observable<Contract[]> {
-    return this.http.get<Contract[]>(`${API_URL}/contract/employee/${employeeId}`);
+    return this.http.get<any[]>(`${API_URL}/contract/employee/${employeeId}`).pipe(map(cs => cs.map(this.mapContract)));
   }
 
   getActiveByEmployee(employeeId: string): Observable<Contract> {

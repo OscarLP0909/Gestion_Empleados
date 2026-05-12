@@ -88,8 +88,8 @@
         </div>
       } @else {
         <div class="contracts-list">
-          @for (c of contracts(); track c._id) {
-            <a class="contract-item" [routerLink]="['/contracts', c._id]">
+          @for (c of contracts(); track getContractId(c)) {
+            <a class="contract-item" [routerLink]="['/contracts', getContractId(c)]">
               <div class="contract-left">
                 <span [class]="'badge ' + getStatusClass(c.status)">{{ c.status }}</span>
                 <div class="contract-info">
