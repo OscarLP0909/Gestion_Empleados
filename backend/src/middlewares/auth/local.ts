@@ -34,7 +34,7 @@ export const localStrategy = {
                 }
 
                 console.log("✅ Login exitoso!");
-                return done(null, user);
+                return done(null, user as any);
             } catch (error) {
                 console.error("❌ Error en estrategia local:", error);
                 return done(error as Error);

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -44,10 +44,13 @@ export class ContractListComponent implements OnInit {
   constructor(
     private contractService: ContractService,
     private notify: NotificationService,
-    public auth: AuthService
+    public auth: AuthService,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
+    const status = this.route.snapshot.queryParamMap.get('status');
+    if (status) this.statusFilter.set(status as ContractStatus);
     this.load();
   }
 

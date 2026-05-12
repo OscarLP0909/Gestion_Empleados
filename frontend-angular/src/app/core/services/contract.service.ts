@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Contract, ContractStatus } from '../models/contract.model';
+import { environment } from '../../../environments/environment';
 
-const API_URL = 'http://localhost:3000';
+const API_URL = environment.apiUrl;
 
 @Injectable({ providedIn: 'root' })
 export class ContractService {
@@ -28,7 +29,7 @@ export class ContractService {
   }
 
   getByEmployeeId(employeeId: string): Observable<Contract[]> {
-    return this.http.get<Contract[]>(`${API_URL}/contract/employee/${employeeId}`);
+    return this.http.get<any[]>(`${API_URL}/contract/employee/${employeeId}`).pipe(map(cs => cs.map(this.mapContract)));
   }
 
   getActiveByEmployee(employeeId: string): Observable<Contract> {
