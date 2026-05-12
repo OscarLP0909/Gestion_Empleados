@@ -51,7 +51,7 @@ async function seed() {
         // --- Contratos ---
         const contractDocs = contractData.map(({ index, ...fields }) => ({
             ...fields,
-            employeeId: inserted[index]._id,
+            employeeId: inserted[index]!._id,
             startDate: new Date("2026-03-24"),
             status: "APROBADO",
         }));
