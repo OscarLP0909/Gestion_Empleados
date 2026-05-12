@@ -8,8 +8,11 @@ services:
       - "80:80"
     depends_on:
       - backend
+
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      target: prod
     ports:
       - "3000:3000"
     depends_on:
