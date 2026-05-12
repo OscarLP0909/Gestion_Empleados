@@ -1,6 +1,6 @@
 # 👥 Employee Management App
 
-Aplicación fullstack para la **gestión integral de empleados y contratos** dentro de una organización. Incluye autenticación con JWT, sistema de roles y permisos, CRUD completo de empleados y contratos, y una interfaz React moderna.
+Aplicación fullstack para la **gestión integral de empleados y contratos** dentro de una organización. Incluye autenticación con JWT, sistema de roles y permisos, CRUD completo de empleados y contratos, auditoría de acciones y una interfaz Angular moderna.
 
 ---
 
@@ -9,61 +9,58 @@ Aplicación fullstack para la **gestión integral de empleados y contratos** den
 ### Backend
 - **Node.js** + **Express.js**
 - **TypeScript**
-- **MySQL** + **Sequelize** (ORM)
+- **MongoDB** + **Mongoose** (ODM)
 - **Passport.js** (autenticación local + JWT)
 - **bcrypt** (hash de contraseñas)
+- **node-cron** (tareas programadas)
 
 ### Frontend
-- **React**
+- **Angular**
 - **TypeScript**
-- **Vite**
+
+### Infraestructura
+- **Docker** + **Docker Compose**
+- **Nginx** (servidor de producción para el frontend)
 
 ---
 
 ## ✨ Funcionalidades
 
-- 🔐 **Autenticación** — Login seguro con JWT (sin sesiones)
+- 🔐 **Autenticación** — Login seguro con JWT (httpOnly cookies)
 - 👤 **Gestión de empleados** — Crear, editar, consultar y eliminar empleados
 - 📄 **Gestión de contratos** — CRUD completo, cambio de estado y filtrado por empleado
 - 🛡️ **Sistema de roles** — `ADMIN`, `HR_MANAGER`, `MANAGER`, `EMPLOYEE`
-- 🏢 **Departamentos, categorías y puestos** — Relación jerárquica entre entidades
+- 📋 **Auditoría** — Log de todas las acciones del sistema
+- ⏰ **Tareas programadas** — Actualización automática de estados de contratos con node-cron
 - 🔒 **Rutas protegidas** — Middleware de autorización por rol
 
 ---
 
-## 📁 Estructura del proyecto
+## 🐳 Docker
 
+El proyecto está completamente dockerizado con soporte para dos entornos.
+
+### Producción
+
+```bash
+docker-compose up --build
 ```
-employee-management/
-├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   │   ├── authController.ts
-│   │   │   ├── employeeController.ts
-│   │   │   └── contractController.ts
-│   │   ├── middlewares/
-│   │   │   ├── auth/
-│   │   │   │   ├── local.ts
-│   │   │   │   └── jwt.ts
-│   │   │   ├── authorization.ts
-│   │   │   └── employee.ts
-│   │   ├── models/
-│   │   │   ├── user.ts
-│   │   │   ├── employee.ts
-│   │   │   └── contract.ts
-│   │   ├── routes/
-│   │   │   ├── authRouter.ts
-│   │   │   ├── employeeRouter.ts
-│   │   │   └── contractRouter.ts
-│   │   └── app.ts
-│   └── package.json
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   ├── pages/
-    │   └── main.tsx
-    └── package.json
+
+Levanta tres contenedores:
+- **backend** — Node.js compilado con TypeScript, puerto 3000
+- **frontend** — Angular compilado, servido con Nginx, puerto 80
+- **mongodb** — MongoDB 7, con volumen persistente
+
+### Desarrollo (hot-reload)
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
+
+Levanta los mismos servicios pero con:
+- **backend** — `tsx watch` para recargar automáticamente al guardar
+- **frontend** — `ng serve` con hot-reload, puerto 4200
+- Volúmenes montados desde tu máquina local
 
 ---
 
@@ -74,28 +71,46 @@ employee-management/
 |--------|------|-------------|
 | `POST` | `/auth/login` | Iniciar sesión |
 | `POST` | `/auth/register` | Registrar usuario |
+| `GET` | `/auth/profile` | Obtener perfil |
+| `PUT` | `/auth/profile` | Actualizar perfil |
+| `PUT` | `/auth/password` | Cambiar contraseña |
 
 ### Empleados
-| Método | Ruta | Descripción | Acceso |
-|--------|------|-------------|--------|
-| `GET` | `/employees` | Listar todos los empleados | Autenticado |
-| `POST` | `/employees` | Crear empleado | Autenticado |
-| `GET` | `/employees/id/:id` | Obtener empleado por ID | Autenticado |
-| `GET` | `/employees/nif/:nif` | Obtener empleado por NIF | Autenticado |
-| `PUT` | `/employees/:id` | Actualizar empleado | Autenticado |
-| `DELETE` | `/employees/:id` | Eliminar empleado | Autenticado |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/employees` | Listar todos los empleados |
+| `POST` | `/employees` | Crear empleado |
+| `GET` | `/employees/id/:id` | Obtener empleado por ID |
+| `GET` | `/employees/nif/:nif` | Obtener empleado por NIF |
+| `PUT` | `/employees/:id` | Actualizar empleado |
+| `DELETE` | `/employees/:id` | Eliminar empleado |
 
 ### Contratos
-| Método | Ruta | Descripción | Acceso |
-|--------|------|-------------|--------|
-| `GET` | `/contracts` | Listar todos los contratos | Autenticado |
-| `POST` | `/contracts` | Crear contrato | Autenticado |
-| `GET` | `/contracts/:id` | Obtener contrato por ID | Autenticado |
-| `PUT` | `/contracts/:id` | Actualizar contrato | Autenticado |
-| `DELETE` | `/contracts/:id` | Eliminar contrato | Autenticado |
-| `PATCH` | `/contracts/status/:id` | Cambiar estado del contrato | Autenticado |
-| `GET` | `/contracts/employee/:employeeId` | Contratos de un empleado | Autenticado |
-| `GET` | `/contracts/employee/active/:employeeId` | Contrato activo de un empleado | Autenticado |
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/contracts` | Listar todos los contratos |
+| `POST` | `/contracts` | Crear contrato |
+| `GET` | `/contracts/:id` | Obtener contrato por ID |
+| `PUT` | `/contracts/:id` | Actualizar contrato |
+| `DELETE` | `/contracts/:id` | Eliminar contrato |
+| `PATCH` | `/contracts/status/:id` | Cambiar estado |
+| `GET` | `/contracts/employee/:employeeId` | Contratos de un empleado |
+| `GET` | `/contracts/employee/active/:employeeId` | Contrato activo de un empleado |
+| `GET` | `/contracts/pending` | Contratos pendientes |
+
+### Usuarios
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/users` | Listar usuarios |
+| `POST` | `/users` | Crear usuario |
+| `PUT` | `/users/:id/role` | Cambiar rol |
+| `PUT` | `/users/:id/deactivate` | Desactivar usuario |
+| `PUT` | `/users/:id/activate` | Activar usuario |
+
+### Auditoría
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/audit` | Obtener logs de auditoría |
 
 ---
 
@@ -113,59 +128,37 @@ employee-management/
 ## ⚙️ Instalación y uso
 
 ### Requisitos previos
-- Node.js v18+
-- MySQL
+- Docker + Docker Compose
 
-### Backend
+### Variables de entorno
 
-```bash
-# Clonar el repositorio
-git clone https://github.com/tu-usuario/employee-management.git
-cd employee-management/backend
-
-# Instalar dependencias
-npm install
-
-# Configurar variables de entorno
-cp .env.example .env
-# Editar .env con tus credenciales de MySQL y JWT_SECRET
-
-# Ejecutar migraciones
-npx sequelize-cli db:migrate
-
-# Iniciar el servidor
-npm run dev
-```
-
-### Frontend
-
-```bash
-cd ../frontend
-
-# Instalar dependencias
-npm install
-
-# Iniciar la aplicación
-npm run dev
-```
-
-La API estará disponible en `http://localhost:3000` y el frontend en `http://localhost:5173`.
-
----
-
-## 🔑 Variables de entorno
-
-Crea un archivo `.env` en la carpeta `backend/` con las siguientes variables:
+Crea un archivo `.env` en la carpeta `backend/` basándote en el `.env.example`:
 
 ```env
 PORT=3000
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=employee_management
-DB_USER=root
-DB_PASSWORD=tu_password
+MONGO_URI=mongodb://mongodb:27017/gestion_empleados
 JWT_SECRET=tu_jwt_secret
 ```
+
+> ⚠️ La variable `MONGO_URI` usa `mongodb` como host (nombre del servicio en Docker Compose), no `localhost`.
+
+### Arrancar en producción
+
+```bash
+docker-compose up --build
+```
+
+- Frontend disponible en: `http://localhost`
+- API disponible en: `http://localhost:3000`
+
+### Arrancar en desarrollo
+
+```bash
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+```
+
+- Frontend disponible en: `http://localhost:4200`
+- API disponible en: `http://localhost:3000`
 
 ---
 
