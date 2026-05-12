@@ -102,8 +102,8 @@
         </div>
       } @else {
         <div class="recent-list">
-          @for (emp of recentEmployees(); track emp._id) {
-            <a class="recent-item" [routerLink]="['/employees', emp._id]">
+          @for (emp of recentEmployees(); track getEmpId(emp)) {
+            <a class="recent-item" [routerLink]="['/employees', getEmpId(emp)]">
               <div class="emp-avatar">{{ (emp.name[0] + emp.surname[0]).toUpperCase() }}</div>
               <div class="emp-info">
                 <span class="emp-name">{{ emp.name }} {{ emp.surname }}</span>

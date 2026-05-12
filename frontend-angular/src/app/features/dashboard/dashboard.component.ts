@@ -98,6 +98,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  getEmpId(emp: Employee): string { return emp._id ?? emp.id ?? ''; }
+
   getEmailPrefix(): string { return this.auth.user()?.email?.split('@')[0] ?? ''; }
 
   getGreeting(): string {
