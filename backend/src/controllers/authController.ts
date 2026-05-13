@@ -20,7 +20,6 @@ export const login = (req: Request, res: Response, next: NextFunction) => {
             if (!user) {
                 return res.status(401).json({ message: "Wrong credentials" });
             }
-            // ✅ ACTUALIZADO: withToken ahora incluye el role automáticamente
             return res.status(200).json(withToken(user as any));
         }
     )(req, res, next);

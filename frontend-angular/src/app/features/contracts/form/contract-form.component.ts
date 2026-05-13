@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, NonNullableFormBuilder, Validators } from '@angular/forms';
@@ -29,6 +29,21 @@ export class ContractFormComponent implements OnInit {
   loadingData = signal(true);
   contractId = signal<string | null>(null);
   employees = signal<Employee[]>([]);
+
+  employeeSearch = signal('');
+  showDropdown = signal(false);
+  selectedEmployee = signal<Employee | null>(null);
+
+  filteredEmployees = computed(() => {
+    const q = this.employeeSearch().toLowerCase().trim();
+    const all = this.employees();
+    if (!q) return all.slice(0, 8);
+    return all.filter(e =>
+      e.name.toLowerCase().includes(q) ||
+      e.surname.toLowerCase().includes(q) ||
+      e.nif.toLowerCase().includes(q)
+    );
+  });
 
   readonly contractTypes = ['Indefinido', 'Prácticas', 'Formación', 'Eventual'] as const;
   readonly workdayTypes = ['Completa', 'Parcial'] as const;
@@ -65,16 +80,58 @@ export class ContractFormComponent implements OnInit {
                 startDate: c.startDate ? new Date(c.startDate).toISOString().split('T')[0] : '',
                 endDate: c.endDate ? new Date(c.endDate).toISOString().split('T')[0] : ''
               });
+              const emp = emps.find(e => this.getId(e) === (c as any).employeeId);
+              if (emp) this.preselectEmployee(emp);
               this.loadingData.set(false);
             },
             error: () => { this.notify.error('Error cargando contrato'); this.router.navigate(['/contracts']); }
           });
         } else {
+          const preId = this.route.snapshot.queryParamMap.get('employeeId');
+          if (preId) {
+            const emp = emps.find(e => this.getId(e) === preId);
+            if (emp) {
+              this.preselectEmployee(emp);
+              this.form.patchValue({ employeeId: preId });
+            }
+          }
           this.loadingData.set(false);
         }
       },
       error: () => { this.notify.error('Error cargando empleados'); this.loadingData.set(false); }
     });
+  }
+
+  preselectEmployee(emp: Employee): void {
+    this.selectedEmployee.set(emp);
+    this.employeeSearch.set(this.getEmpName(emp));
+  }
+
+  onEmployeeSearchInput(value: string): void {
+    this.employeeSearch.set(value);
+    if (this.selectedEmployee()) {
+      this.selectedEmployee.set(null);
+      this.form.patchValue({ employeeId: '' });
+    }
+    this.showDropdown.set(true);
+  }
+
+  selectEmployee(emp: Employee): void {
+    this.selectedEmployee.set(emp);
+    this.employeeSearch.set(this.getEmpName(emp));
+    this.form.patchValue({ employeeId: this.getId(emp) });
+    this.showDropdown.set(false);
+  }
+
+  clearEmployee(): void {
+    this.selectedEmployee.set(null);
+    this.employeeSearch.set('');
+    this.form.patchValue({ employeeId: '' });
+    this.showDropdown.set(false);
+  }
+
+  closeDropdown(): void {
+    setTimeout(() => this.showDropdown.set(false), 150);
   }
 
   submit(): void {

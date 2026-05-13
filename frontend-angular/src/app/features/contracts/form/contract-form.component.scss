@@ -11,3 +11,83 @@
 .required { color: var(--danger); }
 .full-width { grid-column: 1 / -1; }
 .form-actions { display: flex; justify-content: flex-end; gap: 12px; padding-top: 24px; border-top: 1px solid var(--border-color); }
+
+.employee-search-wrapper {
+  position: relative;
+
+  input {
+    padding-right: 36px;
+    width: 100%;
+    box-sizing: border-box;
+
+    &.has-selection {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+  }
+
+  .emp-search-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 18px;
+    pointer-events: none;
+  }
+
+  .emp-clear-btn {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    &:hover { color: var(--text-primary); background: var(--border-color); }
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+  }
+
+  .employee-dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+    z-index: 1000;
+    max-height: 240px;
+    overflow-y: auto;
+
+    li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      cursor: pointer;
+      gap: 12px;
+
+      &:hover { background: var(--accent-light); }
+
+      &.no-results {
+        color: var(--text-muted);
+        cursor: default;
+        justify-content: center;
+        font-size: 13px;
+      }
+
+      .emp-name { font-weight: 500; font-size: 14px; color: var(--text-primary); }
+      .emp-nif { font-size: 12px; color: var(--text-muted); font-family: monospace; flex-shrink: 0; }
+    }
+  }
+}
