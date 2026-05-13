@@ -23,12 +23,39 @@
           <div class="form-grid">
             <div class="form-field full-width">
               <label>Empleado <span class="required">*</span></label>
-              <select formControlName="employeeId">
-                <option value="">Selecciona un empleado</option>
-                @for (emp of employees(); track getId(emp)) {
-                  <option [value]="getId(emp)">{{ getEmpName(emp) }}</option>
+              <div class="employee-search-wrapper">
+                <input
+                  type="text"
+                  [value]="employeeSearch()"
+                  (input)="onEmployeeSearchInput($any($event.target).value)"
+                  (focus)="showDropdown.set(true)"
+                  (blur)="closeDropdown()"
+                  placeholder="Buscar por nombre, apellidos o NIF..."
+                  [class.has-selection]="selectedEmployee() !== null"
+                  autocomplete="off"
+                />
+                @if (selectedEmployee()) {
+                  <button type="button" class="emp-clear-btn" (mousedown)="clearEmployee()">
+                    <mat-icon>close</mat-icon>
+                  </button>
+                } @else {
+                  <mat-icon class="emp-search-icon">search</mat-icon>
                 }
-              </select>
+                @if (showDropdown()) {
+                  <ul class="employee-dropdown">
+                    @if (filteredEmployees().length > 0) {
+                      @for (emp of filteredEmployees(); track getId(emp)) {
+                        <li (mousedown)="selectEmployee(emp)">
+                          <span class="emp-name">{{ emp.name }} {{ emp.surname }}</span>
+                          <span class="emp-nif">{{ emp.nif }}</span>
+                        </li>
+                      }
+                    } @else {
+                      <li class="no-results">No se encontraron empleados</li>
+                    }
+                  </ul>
+                }
+              </div>
               @if (hasError('employeeId', 'required')) { <span class="field-error">Selecciona un empleado</span> }
             </div>
             <div class="form-field">

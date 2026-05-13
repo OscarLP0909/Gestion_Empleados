@@ -74,7 +74,7 @@
       <div class="section-header">
         <h3>Historial de contratos</h3>
         @if (auth.isHrManager()) {
-          <a routerLink="/contracts/new" class="btn btn-primary">
+          <a [routerLink]="['/contracts/new']" [queryParams]="{employeeId: getId(employee()!)}" class="btn btn-primary">
             <mat-icon>add</mat-icon> Nuevo contrato
           </a>
         }
