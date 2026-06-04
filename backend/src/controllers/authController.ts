@@ -124,7 +124,7 @@ export const changePassword = async (req: Request, res: Response, next: NextFunc
             return;
         }
 
-        // ← IMPORTANTE: Seleccionar el password
+        // Seleccionar el password
         const user = await User.findById(req.user?._id).select("+password");
         if (!user) {
             res.status(404).json({ message: "Usuario no encontrado" });
