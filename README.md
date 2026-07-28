@@ -1,6 +1,6 @@
 # 👥 Employee Management App
 
-Aplicación fullstack para la **gestión integral de empleados y contratos** dentro de una organización. Incluye autenticación con JWT, sistema de roles y permisos, CRUD completo de empleados y contratos, auditoría de acciones y una interfaz Angular moderna.
+Aplicación fullstack para la **gestión integral de empleados y contratos** dentro de una organización. Incluye autenticación con JWT, sistema de roles y permisos, CRUD completo de empleados y contratos, auditoría de acciones y una interfaz React moderna.
 
 ---
 
@@ -15,7 +15,7 @@ Aplicación fullstack para la **gestión integral de empleados y contratos** den
 - **node-cron** (tareas programadas)
 
 ### Frontend
-- **Angular**
+- **React** + **Vite**
 - **TypeScript**
 
 ### Infraestructura
@@ -48,7 +48,7 @@ docker-compose up --build
 
 Levanta tres contenedores:
 - **backend** — Node.js compilado con TypeScript, puerto 3000
-- **frontend** — Angular compilado, servido con Nginx, puerto 80
+- **frontend** — React compilado con Vite, servido con Nginx, puerto 80
 - **mongodb** — MongoDB 7, con volumen persistente
 
 ### Desarrollo (hot-reload)
@@ -59,7 +59,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 Levanta los mismos servicios pero con:
 - **backend** — `tsx watch` para recargar automáticamente al guardar
-- **frontend** — `ng serve` con hot-reload, puerto 4200
+- **frontend** — `vite` con hot-reload, puerto 5173
 - Volúmenes montados desde tu máquina local
 
 ---
@@ -157,7 +157,7 @@ docker-compose up --build
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
-- Frontend disponible en: `http://localhost:4200`
+- Frontend disponible en: `http://localhost:5173`
 - API disponible en: `http://localhost:3000`
 
 ---

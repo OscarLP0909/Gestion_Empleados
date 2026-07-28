@@ -2,7 +2,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend-angular
+      context: ./frontend/employee-management-frontend
       target: prod
     ports:
       - "80:80"

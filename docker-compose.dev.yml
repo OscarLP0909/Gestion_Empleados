@@ -1,12 +1,12 @@
 services:
   frontend:
     build:
-      context: ./frontend-angular
+      context: ./frontend/employee-management-frontend
       target: dev
     ports:
-      - "4200:4200"
+      - "5173:5173"
     volumes:
-      - ./frontend-angular/src:/app/src
+      - ./frontend/employee-management-frontend/src:/app/src
     depends_on:
       - backend
   backend:

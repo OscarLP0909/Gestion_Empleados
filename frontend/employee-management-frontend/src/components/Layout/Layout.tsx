@@ -29,13 +29,13 @@ export const Layout = ({ children }: LayoutProps) => {
                         flex: 1,
                         overflowY: "auto",
                         overflowX: "hidden",
-                        padding: "20px",
+                        padding: "24px",
                         backgroundColor: "var(--bs-body-bg)",
                         color: "var(--bs-body-color)",
                         transition: "background-color 0.2s ease",
                     }}
                 >
-                    {children}
+                    <div style={{ maxWidth: "1400px", margin: "0 auto" }}>{children}</div>
                 </main>
             </div>
         </div>

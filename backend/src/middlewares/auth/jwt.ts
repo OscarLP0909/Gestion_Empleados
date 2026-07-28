@@ -22,19 +22,21 @@ interface UserPayload {
 export const withToken = (data: JSONObject): JSONObject => {
     const plainData =
         data instanceof Object && data.toObject ? data.toObject() : data;
-    
+
+    const { password, ...safeData } = plainData;
+
     const token = jwt.sign(
         {
-            _id: plainData._id || plainData.id,
-            email: plainData.email,
-            role: plainData.role || "EMPLOYEE", 
+            _id: safeData._id || safeData.id,
+            email: safeData.email,
+            role: safeData.role || "EMPLOYEE",
         },
         jwtSecret,
-        { expiresIn: "7d" } 
+        { expiresIn: "7d" }
     );
 
     return {
-        ...plainData,
+        ...safeData,
         token,
     };
 };

@@ -9,7 +9,6 @@ passport.use(localStrategy.name, localStrategy.strategy);
 passport.use(jwtStrategy.name, jwtStrategy.strategy);
 
 export const login = (req: Request, res: Response, next: NextFunction) => {
-    console.log("LOGIN BODY: ", req.body);
     passport.authenticate(
         localStrategy.name,
         { session: false },

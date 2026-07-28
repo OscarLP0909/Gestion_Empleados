@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
 import apiClient from "./services/api";
-import { LoginForm } from "./components/auth/LoginForm";
+import { LoginForm } from "./components/Auth/LoginForm";
 import { Dashboard } from "./components/Dashboard/Dashboard";
 import { EmployeesPage } from "./components/Employees/EmployeesPage";
 import { CreateEmployeeForm } from "./components/Employees/CreateEmployeeForm";
