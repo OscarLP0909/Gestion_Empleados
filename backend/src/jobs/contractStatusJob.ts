@@ -21,7 +21,7 @@ export const updateContractStatus = async () => {
         );
 
         if (resultActivate.modifiedCount > 0) {
-            console.log(`✅ ${resultActivate.modifiedCount} contrato(s) activado(s) (APROBADO → ACTIVO)`);
+            console.log(`${resultActivate.modifiedCount} contrato(s) activado(s) (APROBADO → ACTIVO)`);
         }
 
         // ============================================
@@ -40,13 +40,13 @@ export const updateContractStatus = async () => {
         );
 
         if (resultFinalize.modifiedCount > 0) {
-            console.log(`✅ ${resultFinalize.modifiedCount} contrato(s) finalizado(s) (ACTIVO → FINALIZADO)`);
+            console.log(`${resultFinalize.modifiedCount} contrato(s) finalizado(s) (ACTIVO → FINALIZADO)`);
         }
 
         if (resultActivate.modifiedCount === 0 && resultFinalize.modifiedCount === 0) {
-            console.log("ℹ️ No hay contratos para actualizar");
+            console.log("No hay contratos para actualizar");
         }
     } catch (error) {
-        console.error("❌ Error updating contract status:", error);
+        console.error("Error updating contract status:", error);
     }
 };

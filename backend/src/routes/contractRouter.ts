@@ -20,7 +20,7 @@ import {
 
 const router = Router();
 
-// ✅ Rutas públicas (solo autenticación, cualquier rol)
+// Rutas públicas (solo autenticación, cualquier rol)
 router.get(
     "/employee/active/:employeeId",
     ensureAuthenticated,
@@ -35,7 +35,7 @@ router.get(
     getContractsOfEmployee
 );
 
-// ✅ Lectura de contratos (todos los roles autenticados)
+// Lectura de contratos (todos los roles autenticados)
 router.get("/", ensureAuthenticated, getContracts);
 
 // Obtener contratos PENDIENTES (debe ir antes de /:id)
@@ -48,7 +48,7 @@ router.get(
     getContractById
 );
 
-// ✅ Crear contrato (solo HR_MANAGER o ADMIN)
+// Crear contrato (solo HR_MANAGER o ADMIN)
 router.post(
     "/",
     ensureAuthenticated,
@@ -56,7 +56,7 @@ router.post(
     createContract
 );
 
-// ✅ Actualizar contrato (solo HR_MANAGER o ADMIN)
+// Actualizar contrato (solo HR_MANAGER o ADMIN)
 router.put(
     "/:id",
     ensureAuthenticated,
@@ -65,7 +65,7 @@ router.put(
     updateContract
 );
 
-// ✅ Cambiar status (solo HR_MANAGER o ADMIN)
+// Cambiar status (solo HR_MANAGER o ADMIN)
 router.patch(
     "/:id",
     ensureAuthenticated,
@@ -74,7 +74,7 @@ router.patch(
     updateStatus
 );
 
-// ✅ Eliminar contrato (solo ADMIN)
+// Eliminar contrato (solo ADMIN)
 router.delete(
     "/:id",
     ensureAuthenticated,

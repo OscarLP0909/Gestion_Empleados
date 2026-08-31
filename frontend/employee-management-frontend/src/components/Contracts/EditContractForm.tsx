@@ -125,8 +125,12 @@ export const EditContractForm = () => {
                     ]);
 
                     setEmployees(employeesData);
+                    const rawEmployeeId = (contractData as any).employeeId;
                     setFormData({
-                        employeeId: (contractData as any).employeeId,
+                        employeeId:
+                            rawEmployeeId && typeof rawEmployeeId === "object"
+                                ? rawEmployeeId.id ?? rawEmployeeId._id
+                                : rawEmployeeId,
                         contractType: contractData.contractType,
                         workdayType: contractData.workdayType,
                         salaryType: contractData.salaryType,
@@ -441,7 +445,7 @@ export const EditContractForm = () => {
                                                     Guardando...
                                                 </>
                                             ) : (
-                                                "💾 Guardar Cambios"
+                                                "Guardar Cambios"
                                             )}
                                         </button>
                                         <button

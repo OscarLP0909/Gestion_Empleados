@@ -84,7 +84,7 @@ export const updateUserRole = async (
         const { id } = req.params;
         const { role } = req.body;
 
-        // ✅ Validar que role es válido
+        // Validar que role es válido
         const validRoles = ["ADMIN", "HR_MANAGER", "MANAGER", "EMPLOYEE"];
         if (!role || !validRoles.includes(role)) {
             res.status(400).json({
@@ -93,7 +93,7 @@ export const updateUserRole = async (
             return;
         }
 
-        // ✅ Obtener usuario antes del cambio
+        // Obtener usuario antes del cambio
         const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
@@ -102,7 +102,7 @@ export const updateUserRole = async (
 
         const oldRole = user.role;
 
-        // ✅ Actualizar usuario
+        // Actualizar usuario
         const updatedUser = await User.findByIdAndUpdate(
             id,
             { role },
@@ -144,7 +144,7 @@ export const deactivateUser = async (
     try {
         const { id } = req.params;
 
-        // ✅ Evitar que el admin se desactive a sí mismo
+        // Evitar que el admin se desactive a sí mismo
         if (req.user && req.user._id.toString() === id) {
             res.status(400).json({
                 message: "Cannot deactivate your own account",
@@ -152,14 +152,14 @@ export const deactivateUser = async (
             return;
         }
 
-        // ✅ Obtener usuario antes del cambio
+        // Obtener usuario antes del cambio
         const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
         }
 
-        // ✅ Desactivar usuario
+        // Desactivar usuario
         const updatedUser = await User.findByIdAndUpdate(
             id,
             { isActive: false },
@@ -201,14 +201,14 @@ export const activateUser = async (
     try {
         const { id } = req.params;
 
-        // ✅ Obtener usuario antes del cambio
+        // Obtener usuario antes del cambio
         const user = await User.findById(id);
         if (!user) {
             res.status(404).json({ message: "User not found" });
             return;
         }
 
-        // ✅ Activar usuario
+        // Activar usuario
         const updatedUser = await User.findByIdAndUpdate(
             id,
             { isActive: true },

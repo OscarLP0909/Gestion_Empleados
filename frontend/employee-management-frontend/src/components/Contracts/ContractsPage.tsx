@@ -214,7 +214,7 @@ export const ContractsPage = () => {
             <div className="container-fluid">
                 <div className="mb-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
                     <div>
-                        <h1 className="fw-bold mb-2">📋 Contratos</h1>
+                        <h1 className="fw-bold mb-2">Contratos</h1>
                         <p className="text-muted mb-0">
                             Total: {filteredContracts.length} de {contracts.length} contratos
                         </p>
@@ -223,16 +223,13 @@ export const ContractsPage = () => {
                         onClick={() => navigate("/contracts/new")}
                         className="btn btn-primary"
                     >
-                        ➕ Nuevo Contrato
+                        Nuevo Contrato
                     </button>
                 </div>
 
                 <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
                         <div className="input-group">
-                            <span className="input-group-text bg-light border-0">
-                                🔍
-                            </span>
                             <input
                                 type="text"
                                 className="form-control form-control-lg border-0"
@@ -244,7 +241,7 @@ export const ContractsPage = () => {
                                 className="btn btn-outline-secondary"
                                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                             >
-                                ⚙️ Filtros {showAdvancedFilters ? "▼" : "▶"}
+                                Filtros {showAdvancedFilters ? "▼" : "▶"}
                             </button>
                         </div>
                     </div>
@@ -430,7 +427,7 @@ export const ContractsPage = () => {
                                                         className="btn btn-info"
                                                         title="Ver detalles"
                                                     >
-                                                        👁️
+                                                        Ver
                                                     </button>
                                                     <button
                                                         onClick={() =>
@@ -441,7 +438,7 @@ export const ContractsPage = () => {
                                                         className="btn btn-warning"
                                                         title="Editar"
                                                     >
-                                                        ✏️
+                                                        Editar
                                                     </button>
                                                     <button
                                                         onClick={() =>
@@ -450,7 +447,7 @@ export const ContractsPage = () => {
                                                         className="btn btn-danger"
                                                         title="Eliminar"
                                                     >
-                                                        🗑️
+                                                        Eliminar
                                                     </button>
                                                 </div>
                                             </td>

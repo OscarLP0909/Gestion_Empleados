@@ -142,7 +142,7 @@ export const UsersPage = () => {
                 role: formData.role,
             });
 
-            setSuccess("✅ Usuario creado correctamente");
+            setSuccess("Usuario creado correctamente");
             setFormData({
                 name: "",
                 email: "",
@@ -167,7 +167,7 @@ export const UsersPage = () => {
         try {
             const updatedUser = await userService.updateRole(userId, newRole);
             setUsers(users.map((u) => ((u._id || u.id) === userId ? updatedUser : u)));
-            setSuccess("✅ Rol actualizado correctamente");
+            setSuccess("Rol actualizado correctamente");
             setEditingId(null);
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
@@ -182,7 +182,7 @@ export const UsersPage = () => {
         try {
             const updatedUser = await userService.deactivate(userId);
             setUsers(users.map((u) => ((u._id || u.id) === userId ? updatedUser : u)));
-            setSuccess("✅ Usuario desactivado correctamente");
+            setSuccess("Usuario desactivado correctamente");
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError(err.response?.data?.message || "Error al desactivar usuario");
@@ -196,7 +196,7 @@ export const UsersPage = () => {
         try {
             const updatedUser = await userService.activate(userId);
             setUsers(users.map((u) => ((u._id || u.id) === userId ? updatedUser : u)));
-            setSuccess("✅ Usuario activado correctamente");
+            setSuccess("Usuario activado correctamente");
             setTimeout(() => setSuccess(null), 3000);
         } catch (err: any) {
             setError(err.response?.data?.message || "Error al activar usuario");
@@ -248,7 +248,7 @@ export const UsersPage = () => {
                         onClick={() => setShowCreateModal(true)}
                         className="btn btn-primary"
                     >
-                        ➕ Crear Usuario
+                        Crear Usuario
                     </button>
                 </div>
 
@@ -344,7 +344,7 @@ export const UsersPage = () => {
                                                             className="btn btn-link btn-sm ms-2"
                                                             title="Cambiar rol"
                                                         >
-                                                            ✏️
+                                                            Cambiar rol
                                                         </button>
                                                     </>
                                                 )}
@@ -372,7 +372,7 @@ export const UsersPage = () => {
                                                             className="btn btn-outline-danger"
                                                             title="Desactivar"
                                                         >
-                                                            🔒
+                                                            Desactivar
                                                         </button>
                                                     ) : (
                                                         <button
@@ -384,7 +384,7 @@ export const UsersPage = () => {
                                                             className="btn btn-outline-success"
                                                             title="Activar"
                                                         >
-                                                            🔓
+                                                            Activar
                                                         </button>
                                                     )}
                                                 </div>
@@ -537,7 +537,7 @@ export const UsersPage = () => {
                                                 Creando...
                                             </>
                                         ) : (
-                                            "✅ Crear Usuario"
+                                            "Crear Usuario"
                                         )}
                                     </button>
                                 </div>

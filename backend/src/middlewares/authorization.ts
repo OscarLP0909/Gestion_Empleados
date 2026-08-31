@@ -20,7 +20,7 @@ export const authorizeRole = (allowedRoles: string[]) => {
                 return;
             }
 
-            // ✅ Verificar que el role esté en allowedRoles
+            // Verificar que el role esté en allowedRoles
             if (!allowedRoles.includes(user.role)) {
                 res.status(403).json({ 
                     message: `Access denied. Required roles: ${allowedRoles.join(", ")}. Your role: ${user.role}` 

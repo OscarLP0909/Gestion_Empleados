@@ -346,7 +346,7 @@ export const EditEmployeeForm = () => {
                                                     Guardando...
                                                 </>
                                             ) : (
-                                                "💾 Guardar Cambios"
+                                                "Guardar Cambios"
                                             )}
                                         </button>
                                         <button

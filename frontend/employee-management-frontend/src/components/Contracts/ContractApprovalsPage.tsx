@@ -125,7 +125,7 @@ export const ContractApprovalsPage = () => {
                             <div className="card border-0 shadow-sm">
                                 <div className="card-body text-center py-5">
                                     <p className="text-muted mb-0">
-                                        ✅ No hay contratos pendientes de aprobación
+                                        No hay contratos pendientes de aprobación
                                     </p>
                                 </div>
                             </div>
@@ -207,7 +207,7 @@ export const ContractApprovalsPage = () => {
                                                         Aprobando...
                                                     </>
                                                 ) : (
-                                                    "✅ Aprobar"
+                                                    "Aprobar"
                                                 )}
                                             </button>
                                             <button
@@ -225,7 +225,7 @@ export const ContractApprovalsPage = () => {
                                                         Rechazando...
                                                     </>
                                                 ) : (
-                                                    "❌ Rechazar"
+                                                    "Rechazar"
                                                 )}
                                             </button>
                                         </div>

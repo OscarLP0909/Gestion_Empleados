@@ -21,9 +21,13 @@ export const ContractDetail = () => {
                     const contractData = await contractService.getById(id);
                     setContract(contractData);
 
-                    const employeeData = await employeeService.getById(
-                        (contractData as any).employeeId
-                    );
+                    const rawEmployeeId = (contractData as any).employeeId;
+                    const employeeId =
+                        rawEmployeeId && typeof rawEmployeeId === "object"
+                            ? rawEmployeeId.id ?? rawEmployeeId._id
+                            : rawEmployeeId;
+
+                    const employeeData = await employeeService.getById(employeeId);
                     setEmployee(employeeData);
                 }
             } catch (err: any) {
@@ -201,13 +205,13 @@ export const ContractDetail = () => {
                                         onClick={() => navigate(`/contracts/${(contract as any).id}/edit`)}
                                         className="btn btn-warning flex-grow-1"
                                     >
-                                        ✏️ Editar
+                                        Editar
                                     </button>
                                     <button
                                         onClick={handleDelete}
                                         className="btn btn-danger flex-grow-1"
                                     >
-                                        🗑️ Eliminar
+                                        Eliminar
                                     </button>
                                     <button
                                         onClick={() => navigate("/contracts")}

@@ -14,12 +14,10 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
     const isHROrAdmin = ["ADMIN", "HR_MANAGER"].includes(user?.role || "");
 
     const MenuItem = ({
-        icon,
         label,
         path,
         onClick,
     }: {
-        icon: string;
         label: string;
         path?: string;
         onClick?: () => void;
@@ -32,8 +30,7 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
             className={`app-sidebar-link mb-1 ${location.pathname === path ? "active" : ""}`}
             title={label}
         >
-            <span style={{ fontSize: "16px", minWidth: "20px", textAlign: "center" }}>{icon}</span>
-            {isOpen && <span>{label}</span>}
+            {isOpen ? <span>{label}</span> : <span>{label.charAt(0)}</span>}
         </button>
     );
 
@@ -68,17 +65,17 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
             }}
         >
             <SectionTitle label="Principal" />
-            <MenuItem icon="📊" label="Dashboard" path="/dashboard" />
-            <MenuItem icon="👥" label="Empleados" path="/employees" />
-            <MenuItem icon="📋" label="Contratos" path="/contracts" />
+            <MenuItem label="Dashboard" path="/dashboard" />
+            <MenuItem label="Empleados" path="/employees" />
+            <MenuItem label="Contratos" path="/contracts" />
 
             {isHROrAdmin && (
                 <>
                     <SectionTitle label="Gestión" />
-                    <MenuItem icon="➕" label="Crear Empleado" path="/employees/new" />
-                    <MenuItem icon="📝" label="Crear Contrato" path="/contracts/new" />
-                    <MenuItem icon="✅" label="Aprobaciones" path="/contract-approvals" />
-                    <MenuItem icon="📈" label="Reportes" path="/reports" />
+                    <MenuItem label="Crear Empleado" path="/employees/new" />
+                    <MenuItem label="Crear Contrato" path="/contracts/new" />
+                    <MenuItem label="Aprobaciones" path="/contract-approvals" />
+                    <MenuItem label="Reportes" path="/reports" />
                 </>
             )}
 
@@ -87,16 +84,16 @@ export const Sidebar = ({ isOpen }: SidebarProps) => {
                     <SectionTitle label="Administración" />
                     {isAdmin && (
                         <>
-                            <MenuItem icon="👥" label="Usuarios" path="/users" />
-                            <MenuItem icon="🆕" label="Crear Usuario" path="/users/new" />
+                            <MenuItem label="Usuarios" path="/users" />
+                            <MenuItem label="Crear Usuario" path="/users/new" />
                         </>
                     )}
-                    <MenuItem icon="📋" label="Auditoría" path="/audit" />
+                    <MenuItem label="Auditoría" path="/audit" />
                 </>
             )}
 
             <SectionTitle label="Cuenta" />
-            <MenuItem icon="👤" label="Perfil" path="/profile" />
+            <MenuItem label="Perfil" path="/profile" />
         </div>
     );
 };

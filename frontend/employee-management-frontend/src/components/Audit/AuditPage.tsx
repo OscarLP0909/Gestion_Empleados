@@ -144,7 +144,7 @@ export const AuditPage = () => {
             <div className="container-fluid">
                 {/* Header */}
                 <div className="mb-4">
-                    <h1 className="fw-bold mb-2">📋 Auditoría del Sistema</h1>
+                    <h1 className="fw-bold mb-2">Auditoría del Sistema</h1>
                     <p className="text-muted">
                         Registro de todas las acciones realizadas en el sistema
                     </p>
@@ -374,7 +374,7 @@ export const AuditPage = () => {
                             >
                                 <div>
                                     <h5 className="modal-title fw-bold text-white mb-1">
-                                        📝 Cambios Realizados
+                                        Cambios Realizados
                                     </h5>
                                     <small className="text-white-50">
                                         {selectedLog.description}
@@ -424,7 +424,7 @@ export const AuditPage = () => {
                                         <div className="card border-0 bg-light">
                                             <div className="card-body">
                                                 <h6 className="card-subtitle mb-3 text-muted fw-semibold">
-                                                    🎯 Entidad Afectada
+                                                    Entidad Afectada
                                                 </h6>
                                                 <div className="mb-2">
                                                     <small className="text-muted d-block">Tipo</small>
@@ -450,7 +450,7 @@ export const AuditPage = () => {
                                 ).length > 0 ? (
                                     <>
                                         <h6 className="fw-bold mb-3 border-bottom pb-2">
-                                            🔄 Campos Modificados ({getDifferences(
+                                            Campos Modificados ({getDifferences(
                                                 selectedLog.changes?.before,
                                                 selectedLog.changes?.after
                                             ).length}{" "}

@@ -145,7 +145,7 @@ export const EmployeesPage = () => {
                 {/* Header */}
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <div>
-                        <h1 className="fw-bold mb-2">👥 Empleados</h1>
+                        <h1 className="fw-bold mb-2">Empleados</h1>
                         <p className="text-muted">
                             Total: {filteredEmployees.length} de {employees.length} empleados
                         </p>
@@ -154,7 +154,7 @@ export const EmployeesPage = () => {
                         onClick={() => navigate("/employees/new")}
                         className="btn btn-primary"
                     >
-                        ➕ Nuevo Empleado
+                        Nuevo Empleado
                     </button>
                 </div>
 
@@ -162,9 +162,6 @@ export const EmployeesPage = () => {
                 <div className="card border-0 shadow-sm mb-4">
                     <div className="card-body">
                         <div className="input-group">
-                            <span className="input-group-text bg-light border-0">
-                                🔍
-                            </span>
                             <input
                                 type="text"
                                 className="form-control form-control-lg border-0"
@@ -176,7 +173,7 @@ export const EmployeesPage = () => {
                                 className="btn btn-outline-secondary"
                                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                             >
-                                ⚙️ Filtros {showAdvancedFilters ? "▼" : "▶"}
+                                Filtros {showAdvancedFilters ? "▼" : "▶"}
                             </button>
                         </div>
                     </div>
@@ -315,7 +312,7 @@ export const EmployeesPage = () => {
                                                     }
                                                     className="btn btn-sm btn-info me-2"
                                                 >
-                                                    👁️ Ver
+                                                    Ver
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -325,7 +322,7 @@ export const EmployeesPage = () => {
                                                     }
                                                     className="btn btn-sm btn-warning me-2"
                                                 >
-                                                    ✏️ Editar
+                                                    Editar
                                                 </button>
                                                 <button
                                                     onClick={() =>
@@ -333,7 +330,7 @@ export const EmployeesPage = () => {
                                                     }
                                                     className="btn btn-sm btn-danger"
                                                 >
-                                                    🗑️ Eliminar
+                                                    Eliminar
                                                 </button>
                                             </td>
                                         </tr>

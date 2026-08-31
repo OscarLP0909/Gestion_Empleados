@@ -166,7 +166,7 @@ export const CreateEmployeeForm = () => {
                         >
                             ← Atrás
                         </button>
-                        <h1 className="fw-bold mb-0">👤 Crear Nuevo Empleado</h1>
+                        <h1 className="fw-bold mb-0">Crear Nuevo Empleado</h1>
                     </div>
                     <p className="text-muted">Registra un nuevo empleado en el sistema</p>
                 </div>
@@ -190,7 +190,7 @@ export const CreateEmployeeForm = () => {
                                 }}
                             >
                                 <h5 className="text-white fw-bold mb-0">
-                                    📋 Datos del Empleado
+                                    Datos del Empleado
                                 </h5>
                                 <small className="text-white-50">Completa todos los campos requeridos</small>
                             </div>
@@ -330,7 +330,7 @@ export const CreateEmployeeForm = () => {
                                                     Creando empleado...
                                                 </>
                                             ) : (
-                                                "✅ Crear Empleado"
+                                                "Crear Empleado"
                                             )}
                                         </button>
                                         <button
@@ -344,7 +344,7 @@ export const CreateEmployeeForm = () => {
                                                 fontSize: "16px",
                                             }}
                                         >
-                                            ❌ Cancelar
+                                            Cancelar
                                         </button>
                                     </div>
                                 </form>

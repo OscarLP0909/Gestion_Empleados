@@ -301,7 +301,7 @@ export const ProfilePage = () => {
                                                 type="submit"
                                                 className="btn btn-primary flex-grow-1"
                                             >
-                                                💾 Guardar Cambios
+                                                Guardar Cambios
                                             </button>
                                             <button
                                                 type="button"
@@ -356,13 +356,13 @@ export const ProfilePage = () => {
                                                 onClick={() => setEditMode(true)}
                                                 className="btn btn-warning flex-grow-1"
                                             >
-                                                ✏️ Editar Información
+                                                Editar Información
                                             </button>
                                             <button
                                                 onClick={() => setShowPasswordModal(true)}
                                                 className="btn btn-info flex-grow-1"
                                             >
-                                                🔑 Cambiar Contraseña
+                                                Cambiar Contraseña
                                             </button>
                                         </div>
                                     </>
@@ -450,7 +450,7 @@ export const ProfilePage = () => {
                                         type="submit"
                                         className="btn btn-primary"
                                     >
-                                        🔑 Cambiar Contraseña
+                                        Cambiar Contraseña
                                     </button>
                                 </div>
                             </form>

@@ -171,7 +171,7 @@ export const ReportsPage = () => {
                         className="btn btn-success"
                         title="Descargar PDF"
                     >
-                        📥 Exportar PDF
+                        Exportar PDF
                     </button>
                 </div>
 

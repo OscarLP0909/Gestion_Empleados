@@ -62,15 +62,15 @@ export const Toast = ({ notification, onClose }: ToastProps) => {
     const getIcon = () => {
         switch (notification.type) {
             case "success":
-                return "✅";
+                return "OK";
             case "error":
-                return "❌";
+                return "Error";
             case "warning":
-                return "⚠️";
+                return "Aviso";
             case "info":
-                return "ℹ️";
+                return "Info";
             default:
-                return "📢";
+                return "•";
         }
     };
 

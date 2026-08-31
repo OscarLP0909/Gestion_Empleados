@@ -225,7 +225,7 @@ export const CreateContractForm = () => {
                         >
                             ← Atrás
                         </button>
-                        <h1 className="fw-bold mb-0">📋 Crear Nuevo Contrato</h1>
+                        <h1 className="fw-bold mb-0">Crear Nuevo Contrato</h1>
                     </div>
                     <p className="text-muted">Registra un nuevo contrato de trabajo</p>
                 </div>
@@ -249,7 +249,7 @@ export const CreateContractForm = () => {
                                 }}
                             >
                                 <h5 className="text-white fw-bold mb-0">
-                                    📝 Datos del Contrato
+                                    Datos del Contrato
                                 </h5>
                                 <small className="text-white-50">Completa todos los campos requeridos</small>
                             </div>
@@ -260,7 +260,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-12">
                                             <SelectField
-                                                label="👤 Empleado"
+                                                label="Empleado"
                                                 name="employeeId"
                                                 required={true}
                                                 value={formData.employeeId}
@@ -279,7 +279,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-md-4">
                                             <InputField
-                                                label="🏢 Departamento"
+                                                label="Departamento"
                                                 name="department"
                                                 placeholder="IT"
                                                 required={true}
@@ -291,7 +291,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <InputField
-                                                label="🏷️ Categoría"
+                                                label="Categoría"
                                                 name="category"
                                                 placeholder="Senior"
                                                 required={true}
@@ -303,7 +303,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <InputField
-                                                label="💼 Puesto"
+                                                label="Puesto"
                                                 name="position"
                                                 placeholder="Desarrollador"
                                                 required={true}
@@ -319,7 +319,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="📄 Tipo"
+                                                label="Tipo"
                                                 name="contractType"
                                                 required={true}
                                                 value={formData.contractType}
@@ -336,7 +336,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="⏰ Jornada"
+                                                label="Jornada"
                                                 name="workdayType"
                                                 required={true}
                                                 value={formData.workdayType}
@@ -351,7 +351,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-4">
                                             <SelectField
-                                                label="💰 Salario"
+                                                label="Salario"
                                                 name="salaryType"
                                                 required={true}
                                                 value={formData.salaryType}
@@ -370,7 +370,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-md-6">
                                             <InputField
-                                                label="💵 Monto Salario (€)"
+                                                label="Monto Salario (€)"
                                                 name="salaryAmount"
                                                 type="number"
                                                 placeholder="1500"
@@ -383,7 +383,7 @@ export const CreateContractForm = () => {
                                         </div>
                                         <div className="col-md-6">
                                             <InputField
-                                                label="📅 Inicio"
+                                                label="Inicio"
                                                 name="startDate"
                                                 type="date"
                                                 required={true}
@@ -399,7 +399,7 @@ export const CreateContractForm = () => {
                                     <div className="row g-3">
                                         <div className="col-12">
                                             <InputField
-                                                label="📅 Fin (Opcional)"
+                                                label="Fin (Opcional)"
                                                 name="endDate"
                                                 type="date"
                                                 required={false}
@@ -433,7 +433,7 @@ export const CreateContractForm = () => {
                                                     Creando contrato...
                                                 </>
                                             ) : (
-                                                "✅ Crear Contrato"
+                                                "Crear Contrato"
                                             )}
                                         </button>
                                         <button
@@ -447,7 +447,7 @@ export const CreateContractForm = () => {
                                                 fontSize: "16px",
                                             }}
                                         >
-                                            ❌ Cancelar
+                                            Cancelar
                                         </button>
                                     </div>
                                 </form>

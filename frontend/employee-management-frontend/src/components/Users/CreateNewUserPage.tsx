@@ -143,7 +143,7 @@ export const CreateUserPage = () => {
                         >
                             ← Atrás
                         </button>
-                        <h1 className="fw-bold mb-0">🆕 Crear Nuevo Usuario</h1>
+                        <h1 className="fw-bold mb-0">Crear Nuevo Usuario</h1>
                     </div>
                     <p className="text-muted">Añade un nuevo usuario al sistema con acceso a la aplicación</p>
                 </div>
@@ -169,7 +169,7 @@ export const CreateUserPage = () => {
                                 }}
                             >
                                 <h5 className="text-white fw-bold mb-0">
-                                    👤 Datos del Nuevo Usuario
+                                    Datos del Nuevo Usuario
                                 </h5>
                                 <small className="text-white-50">Completa los campos para crear un nuevo usuario</small>
                             </div>
@@ -180,7 +180,7 @@ export const CreateUserPage = () => {
                                     {/* Nombre */}
                                     <div className="mb-4">
                                         <label className="form-label fw-bold text-white mb-2">
-                                            📝 Nombre
+                                            Nombre
                                         </label>
                                         <input
                                             type="text"
@@ -206,7 +206,7 @@ export const CreateUserPage = () => {
                                     {/* Email */}
                                     <div className="mb-4">
                                         <label className="form-label fw-bold text-white mb-2">
-                                            📧 Email
+                                            Email
                                         </label>
                                         <input
                                             type="email"
@@ -232,7 +232,7 @@ export const CreateUserPage = () => {
                                     {/* Contraseña */}
                                     <div className="mb-4">
                                         <label className="form-label fw-bold text-white mb-2">
-                                            🔐 Contraseña
+                                            Contraseña
                                         </label>
                                         <div className="input-group">
                                             <input
@@ -261,7 +261,7 @@ export const CreateUserPage = () => {
                                                     borderLeft: "none",
                                                 }}
                                             >
-                                                {showPassword ? "👁️" : "🚫"}
+                                                {showPassword ? "Ocultar" : "Mostrar"}
                                             </button>
                                         </div>
 
@@ -289,14 +289,14 @@ export const CreateUserPage = () => {
                                             </div>
                                         )}
                                         <small className="text-white-50 mt-2 d-block">
-                                            ✓ Mínimo 6 caracteres
+                                            Mínimo 6 caracteres
                                         </small>
                                     </div>
 
                                     {/* Rol */}
                                     <div className="mb-4">
                                         <label className="form-label fw-bold text-white mb-2">
-                                            👨‍💼 Rol del Usuario
+                                            ‍Rol del Usuario
                                         </label>
                                         <select
                                             name="role"
@@ -312,10 +312,10 @@ export const CreateUserPage = () => {
                                                 fontSize: "16px",
                                             }}
                                         >
-                                            <option value="EMPLOYEE">👤 Empleado</option>
-                                            <option value="MANAGER">📊 Gerente</option>
-                                            <option value="HR_MANAGER">👥 Gestor RRHH</option>
-                                            <option value="ADMIN">🔑 Administrador</option>
+                                            <option value="EMPLOYEE">Empleado</option>
+                                            <option value="MANAGER">Gerente</option>
+                                            <option value="HR_MANAGER">Gestor RRHH</option>
+                                            <option value="ADMIN">Administrador</option>
                                         </select>
                                         <small className="text-white-50 mt-2 d-block">
                                             Selecciona el nivel de permisos del usuario
@@ -345,7 +345,7 @@ export const CreateUserPage = () => {
                                                     Creando usuario...
                                                 </>
                                             ) : (
-                                                <>✅ Crear Usuario</>
+                                                <>Crear Usuario</>
                                             )}
                                         </button>
                                         <button
@@ -359,7 +359,7 @@ export const CreateUserPage = () => {
                                                 fontSize: "16px",
                                             }}
                                         >
-                                            ❌ Cancelar
+                                            Cancelar
                                         </button>
                                     </div>
                                 </form>
@@ -382,19 +382,19 @@ export const CreateUserPage = () => {
                         {/* Tarjeta Info */}
                         <div className="card border-0 shadow-sm mt-4" style={{ borderRadius: "10px" }}>
                             <div className="card-body">
-                                <h6 className="fw-bold mb-3">📋 Información sobre Roles</h6>
+                                <h6 className="fw-bold mb-3">Información sobre Roles</h6>
                                 <div className="small">
                                     <p className="mb-2">
-                                        <strong>👤 Empleado:</strong> Acceso básico, solo lectura de sus datos
+                                        <strong>Empleado:</strong> Acceso básico, solo lectura de sus datos
                                     </p>
                                     <p className="mb-2">
-                                        <strong>📊 Gerente:</strong> Lectura de datos, gestión limitada
+                                        <strong>Gerente:</strong> Lectura de datos, gestión limitada
                                     </p>
                                     <p className="mb-2">
-                                        <strong>👥 Gestor RRHH:</strong> Acceso completo a RRHH y contratos
+                                        <strong>Gestor RRHH:</strong> Acceso completo a RRHH y contratos
                                     </p>
                                     <p className="mb-0">
-                                        <strong>🔑 Administrador:</strong> Acceso total al sistema
+                                        <strong>Administrador:</strong> Acceso total al sistema
                                     </p>
                                 </div>
                             </div>

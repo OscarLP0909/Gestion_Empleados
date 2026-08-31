@@ -148,13 +148,13 @@ export const EmployeeDetail = () => {
                                         onClick={() => navigate(`/employees/${(employee as any).id}/edit`)}
                                         className="btn btn-warning flex-grow-1"
                                     >
-                                        ✏️ Editar
+                                        Editar
                                     </button>
                                     <button
                                         onClick={handleDelete}
                                         className="btn btn-danger flex-grow-1"
                                     >
-                                        🗑️ Eliminar
+                                        Eliminar
                                     </button>
                                     <button
                                         onClick={() => navigate("/employees")}

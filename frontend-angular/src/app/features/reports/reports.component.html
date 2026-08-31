@@ -171,7 +171,7 @@
         <div class="country-list">
           @for (c of byCountry(); track c.country) {
             <div class="country-item">
-              <div class="country-flag">🌍</div>
+              <div class="country-flag"></div>
               <span class="country-name">{{ c.country }}</span>
               <span class="country-bar-wrap">
                 <span class="country-bar" [style.width.%]="c.pct"></span>

@@ -1,10 +1,10 @@
-# 👥 Employee Management App
+# Employee Management App
 
 Aplicación fullstack para la **gestión integral de empleados y contratos** dentro de una organización. Incluye autenticación con JWT, sistema de roles y permisos, CRUD completo de empleados y contratos, auditoría de acciones y una interfaz React moderna.
 
 ---
 
-## 🚀 Stack tecnológico
+## Stack tecnológico
 
 ### Backend
 - **Node.js** + **Express.js**
@@ -24,19 +24,19 @@ Aplicación fullstack para la **gestión integral de empleados y contratos** den
 
 ---
 
-## ✨ Funcionalidades
+## Funcionalidades
 
-- 🔐 **Autenticación** — Login seguro con JWT (httpOnly cookies)
-- 👤 **Gestión de empleados** — Crear, editar, consultar y eliminar empleados
-- 📄 **Gestión de contratos** — CRUD completo, cambio de estado y filtrado por empleado
-- 🛡️ **Sistema de roles** — `ADMIN`, `HR_MANAGER`, `MANAGER`, `EMPLOYEE`
-- 📋 **Auditoría** — Log de todas las acciones del sistema
-- ⏰ **Tareas programadas** — Actualización automática de estados de contratos con node-cron
-- 🔒 **Rutas protegidas** — Middleware de autorización por rol
+- **Autenticación** — Login seguro con JWT (httpOnly cookies)
+- **Gestión de empleados** — Crear, editar, consultar y eliminar empleados
+- **Gestión de contratos** — CRUD completo, cambio de estado y filtrado por empleado
+- **Sistema de roles** — `ADMIN`, `HR_MANAGER`, `MANAGER`, `EMPLOYEE`
+- **Auditoría** — Log de todas las acciones del sistema
+- **Tareas programadas** — Actualización automática de estados de contratos con node-cron
+- **Rutas protegidas** — Middleware de autorización por rol
 
 ---
 
-## 🐳 Docker
+## Docker
 
 El proyecto está completamente dockerizado con soporte para dos entornos.
 
@@ -64,7 +64,7 @@ Levanta los mismos servicios pero con:
 
 ---
 
-## 🔌 API Endpoints
+## API Endpoints
 
 ### Auth
 | Método | Ruta | Descripción |
@@ -114,7 +114,7 @@ Levanta los mismos servicios pero con:
 
 ---
 
-## 🛡️ Sistema de roles
+## Sistema de roles
 
 | Rol | Descripción |
 |-----|-------------|
@@ -125,7 +125,7 @@ Levanta los mismos servicios pero con:
 
 ---
 
-## ⚙️ Instalación y uso
+## Instalación y uso
 
 ### Requisitos previos
 - Docker + Docker Compose
@@ -140,7 +140,7 @@ MONGO_URI=mongodb://mongodb:27017/gestion_empleados
 JWT_SECRET=tu_jwt_secret
 ```
 
-> ⚠️ La variable `MONGO_URI` usa `mongodb` como host (nombre del servicio en Docker Compose), no `localhost`.
+> La variable `MONGO_URI` usa `mongodb` como host (nombre del servicio en Docker Compose), no `localhost`.
 
 ### Arrancar en producción
 
@@ -162,7 +162,7 @@ docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 ---
 
-## 👤 Autor
+## Autor
 
 **Óscar Luque** — Desarrollador Full Stack  
 [GitHub](https://github.com/OscarLP0909) · [Portfolio](https://oscarlp0909.github.io/portfolio_personal/)

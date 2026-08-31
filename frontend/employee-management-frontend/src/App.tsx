@@ -176,13 +176,13 @@ export default function App() {
                 const token = localStorage.getItem("token");
 
                 if (token) {
-                    console.log("🔍 Token encontrado, verificando sesión...");
+                    console.log("Token encontrado, verificando sesión...");
                     try {
                         const response = await apiClient.get("/auth/profile");
-                        console.log("✅ Sesión válida, usuario:", response.data);
+                        console.log("Sesión válida, usuario:", response.data);
                         setUser(response.data);
                     } catch (error) {
-                        console.log("❌ Token inválido, limpiando...");
+                        console.log("Token inválido, limpiando...");
                         localStorage.removeItem("token");
                     }
                 }

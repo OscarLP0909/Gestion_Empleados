@@ -136,7 +136,7 @@ export const Dashboard = () => {
             { name: "Aprobados", value: statusCounts.APROBADO, color: "#28a745" },
             { name: "Rechazados", value: statusCounts.RECHAZADO, color: "#dc3545" },
             { name: "Finalizados", value: statusCounts.FINALIZADO, color: "#6c757d" },
-        ];
+        ].filter((d) => d.value > 0);
 
         setContractStatusData(data);
     };
@@ -249,7 +249,7 @@ export const Dashboard = () => {
             <div className="container-fluid">
                 {/* Header */}
                 <div className="mb-4">
-                    <h1 className="fw-bold mb-2">📊 Dashboard</h1>
+                    <h1 className="fw-bold mb-2">Dashboard</h1>
                     <p className="text-muted">
                         Bienvenido, {user?.name}! Aquí está el resumen de tu empresa.
                     </p>
@@ -261,7 +261,7 @@ export const Dashboard = () => {
                         <StatCard
                             title="Total Empleados"
                             value={stats.totalEmployees}
-                            icon="👥"
+                            icon=""
                             color="primary"
                             onClick={() => navigate("/employees")}
                         />
@@ -270,7 +270,7 @@ export const Dashboard = () => {
                         <StatCard
                             title="Total Contratos"
                             value={stats.totalContracts}
-                            icon="📋"
+                            icon=""
                             color="info"
                             onClick={() => navigate("/contracts")}
                         />
@@ -279,7 +279,7 @@ export const Dashboard = () => {
                         <StatCard
                             title="Contratos Activos"
                             value={stats.activeContracts}
-                            icon="✅"
+                            icon=""
                             color="success"
                         />
                     </div>
@@ -287,7 +287,7 @@ export const Dashboard = () => {
                         <StatCard
                             title="Contratos Finalizados"
                             value={stats.finalizedContracts}
-                            icon="🏁"
+                            icon=""
                             color="secondary"
                         />
                     </div>
@@ -298,7 +298,7 @@ export const Dashboard = () => {
                     {stats.pendingContracts > 0 && (
                         <div className="col-md-4 mb-3">
                             <div className="alert alert-danger border-start border-4 border-danger">
-                                <h6 className="fw-bold mb-2">⚠️ Contratos Pendientes de Aprobación</h6>
+                                <h6 className="fw-bold mb-2">Contratos Pendientes de Aprobación</h6>
                                 <p className="mb-0 small">
                                     <strong className="fs-5">{stats.pendingContracts}</strong> contrato(s) aguardando aprobación.
                                 </p>
@@ -314,7 +314,7 @@ export const Dashboard = () => {
                     {stats.expiringContracts > 0 && (
                         <div className="col-md-4 mb-3">
                             <div className="alert alert-warning border-start border-4 border-warning">
-                                <h6 className="fw-bold mb-2">⏰ Contratos próximos a finalizar</h6>
+                                <h6 className="fw-bold mb-2">Contratos próximos a finalizar</h6>
                                 <p className="mb-0 small">
                                     {stats.expiringContracts} contrato(s) se vencerá(n) en los próximos 30 días.
                                 </p>
@@ -330,7 +330,7 @@ export const Dashboard = () => {
                     {stats.startingSoonContracts > 0 && (
                         <div className="col-md-4 mb-3">
                             <div className="alert alert-info border-start border-4 border-info">
-                                <h6 className="fw-bold mb-2">🚀 Contratos próximos a empezar</h6>
+                                <h6 className="fw-bold mb-2">Contratos próximos a empezar</h6>
                                 <p className="mb-0 small">
                                     {stats.startingSoonContracts} contrato(s) empezará(n) en los próximos 30 días.
                                 </p>
@@ -348,7 +348,7 @@ export const Dashboard = () => {
                     <div className="row mb-4">
                         <div className="col-12">
                             <div className="alert alert-success border-start border-4 border-success">
-                                <h6 className="fw-bold mb-2">✅ Todo bajo control</h6>
+                                <h6 className="fw-bold mb-2">Todo bajo control</h6>
                                 <p className="mb-0 small">No hay contratos pendientes de aprobación ni próximos a vencer.</p>
                             </div>
                         </div>
@@ -362,25 +362,31 @@ export const Dashboard = () => {
                         <div className="card border-0 shadow-sm">
                             <div className="card-body">
                                 <h5 className="card-title fw-bold mb-4">Estado de Contratos</h5>
-                                <ResponsiveContainer width="100%" height={300}>
-                                    <PieChart>
-                                        <Pie
-                                            data={contractStatusData}
-                                            cx="50%"
-                                            cy="50%"
-                                            labelLine={false}
-                                            label={({ name, value }) => `${name}: ${value}`}
-                                            outerRadius={100}
-                                            fill="#8884d8"
-                                            dataKey="value"
-                                        >
-                                            {contractStatusData.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.color} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
+                                {contractStatusData.length > 0 ? (
+                                    <ResponsiveContainer width="100%" height={300}>
+                                        <PieChart>
+                                            <Pie
+                                                data={contractStatusData}
+                                                cx="50%"
+                                                cy="50%"
+                                                labelLine={false}
+                                                label={({ name, value }) => `${name}: ${value}`}
+                                                outerRadius={100}
+                                                fill="#8884d8"
+                                                dataKey="value"
+                                            >
+                                                {contractStatusData.map((entry, index) => (
+                                                    <Cell key={`cell-${index}`} fill={entry.color} />
+                                                ))}
+                                            </Pie>
+                                            <Tooltip />
+                                        </PieChart>
+                                    </ResponsiveContainer>
+                                ) : (
+                                    <p className="text-muted text-center py-5">
+                                        Sin datos disponibles
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </div>
