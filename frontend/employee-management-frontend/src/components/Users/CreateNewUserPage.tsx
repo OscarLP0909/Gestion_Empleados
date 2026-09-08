@@ -373,9 +373,6 @@ export const CreateUserPage = () => {
                                     borderTop: "1px solid rgba(255,255,255,0.1)",
                                 }}
                             >
-                                <small className="text-white-50">
-                                    ℹ️ El usuario será creado con estado activo (isActive = true)
-                                </small>
                             </div>
                         </div>
 
