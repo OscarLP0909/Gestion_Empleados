@@ -137,7 +137,7 @@ Crea un archivo `.env` en la carpeta `backend/` basándote en el `.env.example`:
 ```env
 PORT=3000
 MONGO_URI=mongodb://mongodb:27017/gestion_empleados
-JWT_SECRET=tu_jwt_secret
+JWT_SECRET=ejemplo_jwt_secret
 ```
 
 > La variable `MONGO_URI` usa `mongodb` como host (nombre del servicio en Docker Compose), no `localhost`.
