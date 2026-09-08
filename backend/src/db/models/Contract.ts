@@ -57,7 +57,7 @@ export const contractSchema = new Schema(
         },
         status: {
             type: String,
-            enum: ["PENDIENTE", "APROBADO", "RECHAZADO", "FINALIZADO"],
+            enum: ["PENDIENTE", "APROBADO", "ACTIVO", "RECHAZADO", "FINALIZADO"],
             default: "PENDIENTE"
         },
     },
